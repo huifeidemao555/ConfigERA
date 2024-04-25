@@ -3,14 +3,16 @@ package org.example.service;
 import org.example.entity.node_feature;
 import org.example.entity.node_features;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class recommand {
-    public static List<String> recommand_keyword(List<node_features> list, List<String> parents, String key_word, List<String> brother, int topN) {
+    public static List<String> recommand_keyword(List<node_features> list, List<String> parents, List<String> brother, String key_word, int topN, boolean ARC) {
         /**
          * 根据输入的input信息推荐出合适的关键字
          */
-        if(topN == 0) { //没有采用topN的情况
+        List<node_feature> topn_list = new ArrayList<>();
+        if(!ARC) { //没有采用ARC的情况
             for(node_features features : list) {
                 if(features.getKey_word().equals(key_word)) {
                     List<String> ret = null;
@@ -36,16 +38,40 @@ public class recommand {
                         if(i < brother.size()) {
                             continue;
                         }
-
-                        ret = feature.getScore() > score ? feature.getChild_node() : ret;
-                        score = feature.getScore() > score ? feature.getScore() : score;
+                        add_to_topn_list(topn_list, topN, feature);
                     }
-                    return ret;
-                    break;
+                    return get_ret_from_topn_list(topn_list);
                 }
             }
         } else {    ////采用topN的情况
             return null;
         }
+        return null;
+    }
+
+
+    private static void add_to_topn_list(List<node_feature> list, int topN, node_feature feature) {
+        if(list.size() < topN) {
+            list.add(feature);
+        } else {
+            int min_index = 0;
+            for(int i = 1; i < list.size(); i++) {
+                if(list.get(min_index).getScore() >= list.get(i).getScore()) {
+                    min_index = i;
+                }
+            }
+            if(list.get(min_index).getScore() < feature.getScore()) {
+                list.remove(min_index);
+                list.add(feature);
+            }
+        }
+    }
+
+    private static List<String> get_ret_from_topn_list(List<node_feature> list) {
+        List<String> ret = new ArrayList<>();
+        for(node_feature feature : list) {
+            ret.add(feature.getChild_node().toString());
+        }
+        return ret;
     }
 }

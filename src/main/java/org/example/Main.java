@@ -7,9 +7,12 @@ import org.example.service.parse_node;
 import org.example.utils.CastToPyArray;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.example.service.calculate_scores.calculate_scores;
+import static org.example.service.recommand.recommand_keyword;
 
 public class Main {
     private static String path = "./数据集思科（Netcomplete综合）/取输入的数据集/";
@@ -43,5 +46,15 @@ public class Main {
         //4.计算每一个特征的得分
         calculate_scores(parse_node.features_list, result, parse_config.matrix);
         System.out.println(parse_node.features_list);
+
+        //5.测试推荐能得到什么结果
+        List<String> parents = new ArrayList<>();
+        parents.add("interface");
+        List<String> brother = new ArrayList<>();
+        String node = "interfaceAttr";
+        System.out.println("******************************************************");
+        System.out.println("推荐的结果如下:");
+        System.out.println(recommand_keyword(parse_node.features_list, parents, brother, node, 2, false));
+
     }
 }
