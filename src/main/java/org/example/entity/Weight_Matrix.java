@@ -11,11 +11,11 @@ public class Weight_Matrix {
     public Weight_Matrix() {
         this.key_word_index = new HashMap<>();
         this.count = 0;
-        this.matrix = new Integer[100][]; // 只初始化外部数组
+        this.matrix = new Integer[10000][]; // 只初始化外部数组
 
         // 初始化每一个内部的数组
         for (int i = 0; i < matrix.length; i++) {
-            matrix[i] = new Integer[100];
+            matrix[i] = new Integer[10000];
             Arrays.fill(matrix[i], 0);
         }
     }
@@ -94,4 +94,11 @@ public class Weight_Matrix {
         return degreeMatrix;
     }
 
+    public void clear() {
+        this.count = 0;
+        this.key_word_index.clear();
+        for(int i = 0; i < this.matrix.length; i++) {
+            Arrays.fill(this.matrix[i], 0);
+        }
+    }
 }

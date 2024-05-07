@@ -18,34 +18,4 @@ public class test {
         }
     }
 
-    public static int[][] convertPythonArrayToJavaMatrix(String pythonArrayString) {
-        List<List<Integer>> matrixRows = new ArrayList<>();
-        Pattern rowPattern = Pattern.compile("\\[(.*?)\\]");
-        Matcher rowMatcher = rowPattern.matcher(pythonArrayString);
-
-        while (rowMatcher.find()) {
-            String rowString = rowMatcher.group(1);
-            List<Integer> row = new ArrayList<>();
-            Pattern elementPattern = Pattern.compile("\\b(\\d+)\\b");
-            Matcher elementMatcher = elementPattern.matcher(rowString);
-
-            while (elementMatcher.find()) {
-                int element = Integer.parseInt(elementMatcher.group(1));
-                row.add(element);
-            }
-
-            matrixRows.add(row);
-        }
-
-        // 转换为二维数组
-        int[][] matrix = new int[matrixRows.size()][];
-        for (int i = 0; i < matrixRows.size(); i++) {
-            List<Integer> row = matrixRows.get(i);
-            matrix[i] = new int[row.size()];
-            for (int j = 0; j < row.size(); j++) {
-                matrix[i][j] = row.get(j);
-            }
-        }
-        return matrix;
-    }
 }

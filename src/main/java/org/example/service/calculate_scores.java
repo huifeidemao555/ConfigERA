@@ -18,8 +18,10 @@ public class calculate_scores {
                 int score_count = 0;
                 for(String parents : feature.getParents_node()) {
                     Integer j = weightMatrix.get_key_word_index(parents);
-                    scores += matrix[i][j];
-                    score_count += 1;
+                    if(j >= 0) {
+                        scores += matrix[i][j];
+                        score_count += 1;
+                    }
                 }
                 for(String brother : feature.getBrother_node()) {
                     Integer j = weightMatrix.get_key_word_index(brother);

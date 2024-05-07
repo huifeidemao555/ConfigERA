@@ -53,4 +53,9 @@ public class PythonInterpret {
             throw new RuntimeException(e);
         }
     }
+
+//    public static void main(String[] args) {
+//        String a = "[[1, 0], [0, 1]]";
+//        String b = "[[2, 0], [0, 2]]";
+//    }
 }

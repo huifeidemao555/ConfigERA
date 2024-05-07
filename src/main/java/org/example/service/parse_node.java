@@ -86,4 +86,8 @@ public class parse_node {
         return features1;
     }
 
+    public static void clear() {
+        features_list.clear();
+    }
+
 }

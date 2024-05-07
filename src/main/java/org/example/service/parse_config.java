@@ -57,9 +57,10 @@ public class parse_config {
 //        System.out.println(parse_out_path);
         /*****************************2.对文件的每一行进行解析*****************************/
         try {
-            config_count = 0;
-            key_words_set.clear();
-            triplets.clear();
+//            config_count = 0;
+//            key_words_set.clear();
+//            triplets.clear();
+//            matrix.clear();
             String line = "";
             String curAttr = "";
             String lineAttr = "";
@@ -181,6 +182,7 @@ public class parse_config {
     private static boolean isIPAddr(String str) {
         //判断是否是ip地址的正则表达式
         String reg = "^([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}$";
+//        String reg = "^([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}(?:/(\\d{1,2}|3[0-2]))?$";
         return Pattern.matches(reg, str);
     }
     private static boolean isInteger(String str) {
@@ -197,6 +199,13 @@ public class parse_config {
 
     private static boolean isValue(String str) {
         return str.startsWith("\"") && str.endsWith("\"");
+    }
+
+    public static void clear() {
+        config_count = 0;
+        key_words_set.clear();
+        matrix.clear();
+        triplets.clear();
     }
 }
 
