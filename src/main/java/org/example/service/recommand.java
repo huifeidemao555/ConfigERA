@@ -71,6 +71,9 @@ public class recommand {
     private static List<String> get_ret_from_topn_list(List<node_feature> list) {
         List<String> ret = new ArrayList<>();
         for(node_feature feature : list) {
+            if(feature.getChild_node().isEmpty()) {
+                continue;
+            }
             ret.add(feature.getChild_node().get(0));
         }
         return ret;

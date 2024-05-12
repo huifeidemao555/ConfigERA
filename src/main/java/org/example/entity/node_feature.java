@@ -2,6 +2,7 @@ package org.example.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class node_feature implements Cloneable {
     private String node_name = "";
@@ -82,5 +83,36 @@ public class node_feature implements Cloneable {
         newNode.parents_node.addAll(this.parents_node);
         newNode.brother_node.addAll(this.brother_node);
         return newNode;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(node_name, parents_node, brother_node, child_node);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(obj == null || getClass() != obj.getClass()) return false;
+        node_feature obj1 = (node_feature) obj;
+        if(obj1.getParents_node().size() != this.getParents_node().size() || obj1.getBrother_node().size() != this.getBrother_node().size() || obj1.getChild_node().size() != this.getChild_node().size() || !obj1.getNode_name().equals(this.node_name)) {
+            return false;
+        }
+        for(int i = 0; i < parents_node.size(); i++) {
+            if(!parents_node.get(i).equals(obj1.getParents_node().get(i))) {
+                return false;
+            }
+        }
+        for(int i = 0; i < brother_node.size(); i++) {
+            if(!brother_node.get(i).equals(obj1.getBrother_node().get(i))) {
+                return false;
+            }
+        }
+        for(int i = 0; i < child_node.size(); i++) {
+            if(!child_node.get(i).equals(obj1.getChild_node().get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

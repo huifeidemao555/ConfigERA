@@ -101,4 +101,37 @@ public class Weight_Matrix {
             Arrays.fill(this.matrix[i], 0);
         }
     }
+    public int get_config_count() {
+        /*
+         * 获取全部配置对的数量
+         */
+        int config_count = 0;
+        for(int i = 0; i < this.count; i++) {
+            for(int j = 0; j < this.count; j++) {
+                config_count += this.matrix[i][j];
+            }
+        }
+        return config_count;
+    }
+
+    public int get_config_count(String key_word) {
+        /*
+         * 获取指定配置对的数量
+         */
+        int config_count = 0;
+        int index = this.get_key_word_index(key_word);
+        for(int i = 0; i < this.count; i++) {
+            config_count += this.matrix[index][i];
+        }
+        for(int j = 0; j < this.count; j++) {
+            config_count += this.matrix[j][index];
+        }
+        return config_count;
+    }
+
+    public int get_config_count(String key1, String key2) {
+        int index_i = this.get_key_word_index(key1);
+        int index_j = this.get_key_word_index(key2);
+        return this.matrix[index_i][index_j];
+    }
 }
