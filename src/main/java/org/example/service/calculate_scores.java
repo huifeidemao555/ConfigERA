@@ -73,4 +73,12 @@ public class calculate_scores {
 //            }
         }
     }
+    public static void calculates_scores_spss(List<node_features> list, Weight_Matrix weightMatrix) {
+        /*
+         * 这个函数需要完成计算每一个目标的卡方值
+         * node_features是关键字相同的特征的集合，需要对整个list里面的所有的特征计算一遍卡方值
+         * 最后将每个特征的卡方值通过node_feature的setScore方法保存
+         * 通过weightMatrix的get_config_count方法可以获取配置对的数量
+         */
+    }
 }
