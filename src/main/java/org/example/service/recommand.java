@@ -78,4 +78,12 @@ public class recommand {
         }
         return ret;
     }
+
+    public static List<String> get_ret_spss(List<String> spss, String key_word, int topN) {
+        /*
+         * spss为保存的卡方值，这里类型改为对应类型
+         * 给定配置对的第一个关键字，根据卡方值从大到小推荐n个数值
+         * 中间过程无所谓，最终我会调用这个函数获取输出就行
+         */
+    }
 }

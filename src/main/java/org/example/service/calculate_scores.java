@@ -73,12 +73,12 @@ public class calculate_scores {
 //            }
         }
     }
-    public static void calculates_scores_spss(List<node_features> list, Weight_Matrix weightMatrix) {
+    public static void calculates_scores_spss() {
         /*
-         * 这个函数需要完成计算每一个目标的卡方值
-         * node_features是关键字相同的特征的集合，需要对整个list里面的所有的特征计算一遍卡方值
-         * 最后将每个特征的卡方值通过node_feature的setScore方法保存
-         * 通过weightMatrix的get_config_count方法可以获取配置对的数量
+         * 这个函数需要完成对 数据集思科/取输入的数据集/卡方检验的数据集   这个目录中的AB两个数据集进行训练
+         * 调用parse_config中的parse_cfg方法可以对指定文件进行解析，parse_config中的triplets就是保存的解析后所有的三元组集合，
+         * 对A目录解析后的三元组list进行深拷贝后就能调用clear清除以便解析下一个目录
+         * 这里进行卡方运算后保存好变量，可以更改返回类型
          */
     }
 }
