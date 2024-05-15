@@ -52,7 +52,7 @@ public class parse_config {
         if(!out_dir.isDirectory()) out_dir.mkdirs();
 
         BufferedReader reader = new BufferedReader(new FileReader(new File(filepath)));
-        FileWriter writer = new FileWriter(new File(parse_out_path));
+//        FileWriter writer = new FileWriter(new File(parse_out_path));
 
 //        System.out.println(parse_out_path);
         /*****************************2.对文件的每一行进行解析*****************************/
@@ -80,14 +80,14 @@ public class parse_config {
                 lineAttr = "";
                 if(tab) {
                     if(!attrs.contains(strs[0])) {
-                        write_result(writer, curAttr, "internalCMD", strs[0]);
+                        write_result(curAttr, "internalCMD", strs[0]);
                         attrs.add(strs[0]);
                     } else {
                         i = 2;
-                        write_result(writer, strs[0] + "Attr", "internalCMD", strs[i]);
+                        write_result(strs[0] + "Attr", "internalCMD", strs[i]);
                     }
                 } else {
-                    write_same_level(attrs, writer);
+                    write_same_level(attrs);
                     curAttr = "";
                     attrs.clear();
                 }
@@ -95,27 +95,26 @@ public class parse_config {
                     if(i > 0 && isIPAddr(strs[i]) && (isIPAddr(strs[i - 1]) || isIPAddr(strs[i + 1]))) {
                         continue;
                     } else if(isFloat(strs[i]) || isInteger(strs[i]) || isIPAddr(strs[i]) || isValue(strs[i])) {
-                        write_result(writer, lineAttr, "internalCMD", strs[i + 1]);
+                        write_result(lineAttr, "internalCMD", strs[i + 1]);
                     } else if(strs[i].equals("interface") || strs[i].equals("hostname") || isFloat(strs[i + 1]) || isInteger(strs[i + 1]) || isIPAddr(strs[i + 1]) || isValue(strs[i + 1])) {
-                        write_result(writer, strs[i], "attrCMD", strs[i] + "Attr");
+                        write_result(strs[i], "attrCMD", strs[i] + "Attr");
                         if(!tab) {
                             curAttr = strs[i] + "Attr";
                         } else {
                             lineAttr = strs[i] + "Attr";
                         }
                     } else {
-                        write_result(writer, strs[i], "internalCMD", strs[i + 1]);
+                        write_result(strs[i], "internalCMD", strs[i + 1]);
                     }
                 }
                 i = 0;
             }
-            write_same_level(attrs, writer);
+            write_same_level(attrs);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         reader.close();
-        writer.close();
 
         return config_count;
     }
@@ -126,20 +125,20 @@ public class parse_config {
     public static List<Triplet> getTriplets() {
         return triplets;
     }
-    private static void write_same_level(Set<String> attrs, FileWriter writer) throws IOException {
+    private static void write_same_level(Set<String> attrs) throws IOException {
         /**
          * 从记录的同级属性数组中建立同级属性关系
          */
         List<String> list = new ArrayList<>(attrs);
         for(int i = 0; i < list.size() - 1; i++) {
             for(int j = i + 1; j < list.size(); j++) {
-                write_result(writer, list.get(i), "sameLevel", list.get(j));
-                write_result(writer, list.get(j), "sameLevel", list.get(i));
+                write_result(list.get(i), "sameLevel", list.get(j));
+                write_result(list.get(j), "sameLevel", list.get(i));
             }
         }
     }
 
-    private static void write_result(FileWriter writer, String start, String relation, String end) throws IOException {
+    private static void write_result(String start, String relation, String end) throws IOException {
         /**
          * 将三元组写入文件中
          */

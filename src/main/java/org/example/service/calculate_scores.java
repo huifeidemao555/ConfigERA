@@ -115,7 +115,7 @@ public class calculate_scores {
         return counts;
     }
 
-    public static Map<Triplet, Double> calculates_scores_spss() throws IOException {
+    public static Map<Triplet, Double> calculates_scores_spss(String path) throws IOException {
         /*
          * 这个函数需要完成对 数据集思科/取输入的数据集/卡方检验的数据集   这个目录中的AB两个数据集进行训练
          * 调用parse_config中的parse_cfg方法可以对指定文件进行解析，parse_config中的triplets就是保存的解析后所有的三元组集合，
@@ -123,7 +123,8 @@ public class calculate_scores {
          * 这里进行卡方运算后保存好变量，可以更改返回类型
          */
         String path_a = "./数据集思科（Netcomplete综合）/取输入的数据集/卡方检验的数据集/A/";
-        String path_b = "./数据集思科（Netcomplete综合）/取输入的数据集/卡方检验的数据集/B/";
+//        String path_b = "./数据集思科（Netcomplete综合）/取输入的数据集/卡方检验的数据集/B/";
+        String path_b = path;
         List<String> file_names_a = listFiles(path_a);
         List<String> file_names_b = listFiles(path_b);
         String saved_path = "";
