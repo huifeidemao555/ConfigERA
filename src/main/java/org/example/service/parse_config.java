@@ -155,12 +155,12 @@ public class parse_config {
             key_words_set.add(end);
         }
 
-        try {
-            writer.write(triplet);
-        } catch (IOException e) {
-            System.out.println("写入结果出现错误！");
-            throw new RuntimeException(e);
-        }
+//        try {
+//            writer.write(triplet);
+//        } catch (IOException e) {
+//            System.out.println("写入结果出现错误！");
+//            throw new RuntimeException(e);
+//        }
         insert_to_matrix(start, end);
     }
 

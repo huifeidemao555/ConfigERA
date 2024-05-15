@@ -1,10 +1,14 @@
 package org.example.service;
 
+import org.example.entity.Triplet;
 import org.example.entity.node_feature;
 import org.example.entity.node_features;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class recommand {
     public static List<String> recommand_keyword(List<node_features> list, List<String> parents, List<String> brother, String key_word, int topN) {
@@ -47,7 +51,7 @@ public class recommand {
                 return get_ret_from_topn_list(topn_list);
             }
         }
-        return null;
+        return new ArrayList<>();
     }
 
 
@@ -79,11 +83,29 @@ public class recommand {
         return ret;
     }
 
-    public static List<String> get_ret_spss(List<String> spss, String key_word, int topN) {
-        /*
-         * spss为保存的卡方值，这里类型改为对应类型
-         * 给定配置对的第一个关键字，根据卡方值从大到小推荐n个数值
-         * 中间过程无所谓，最终我会调用这个函数获取输出就行
-         */
+    public static List<String> get_ret_spss(Map<Triplet, Double> spss, String key_word, int topN) {
+        List<String> result = new ArrayList<>();
+
+        // 根据卡方值从大到小排序
+        List<Map.Entry<Triplet, Double>> sortedEntries = spss.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+
+        // 遍历排序后的列表，获取前 N 个数值，并且第一个关键字为 key_word
+        for (Map.Entry<Triplet, Double> entry : sortedEntries) {
+            Triplet triplet = entry.getKey();
+            String firstKeyword = triplet.getStart(); // 获取配置对的第一个关键字
+            if (firstKeyword.equals(key_word)) {
+                if (result.contains(triplet.getEnd())){
+                    continue;
+                }
+                result.add(triplet.getEnd()); // 将符合条件的结果添加到结果列表中
+                if (result.size() == topN) {
+                    break; // 已经找到了 topN 个符合条件的结果，退出循环
+                }
+            }
+        }
+
+        return result;
     }
 }

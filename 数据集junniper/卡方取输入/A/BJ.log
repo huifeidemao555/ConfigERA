@@ -1,0 +1,4060 @@
+kfp@r-bj6_re0> show con
+                       ^
+'con' is ambiguous.
+Possible completions:
+  configuration        Show current configuration
+  connections          Show circuit cross-connect connections
+{master}
+kfp@r-bj6_re0> show configuration | no-more 
+## Last commit: 2013-07-04 15:16:06 CST by kfp
+version 10.0S6;
+groups {
+    re0 {
+        system {
+            host-name r-bj6_re0;
+        }
+        inactive: interfaces {
+            fxp0 {
+                unit 0 {
+                    family inet {
+                        address 172.27.1.1/24;
+                    }
+                }
+            }
+        }
+    }
+    re1 {
+        system {
+            host-name r-bj6_re1;
+        }
+    }
+    INTERFACE-BACKBONE {
+        interfaces {
+            <*> {
+                mtu 9192;
+                encapsulation ppp;
+                sonet-options {
+                    fcs 32;
+                    payload-scrambler;
+                }
+                unit 0 {
+                    family inet {
+                        mtu 9180;
+                    }
+                    family inet6 {
+                        mtu 9180;
+                    }
+                    family mpls {
+                        mtu 9180;
+                    }
+                }
+            }
+        }
+    }
+}
+apply-groups [ re0 re1 ];
+system {
+    domain-name cernet2.net;
+    time-zone Asia/Shanghai;
+    root-authentication {
+        encrypted-password "$1$xZ4uRjAJ$.BXinbe5BCBxIs/tFne9y1"; ## SECRET-DATA
+    }
+    name-server {
+        202.38.184.13;
+        202.38.184.29;
+        2001:250:C006::2;
+        2001:251:E101::2;
+        202.38.120.242;
+        202.38.109.3;
+        2001:da8:1:100::20;
+    }
+    login {
+        class nms-dev {
+            permissions all;
+            deny-commands "configure|restart|request";
+        }
+        class noc {
+            permissions all;
+            deny-commands "^configure$";
+        }
+        class normal {
+            idle-timeout 3;
+            permissions [ interface network view ];
+            allow-commands "show log *";
+        }
+        user admin {
+            uid 202;
+            class super-user;
+            authentication {
+                encrypted-password "$1$MXqiO/UU$K9Qb6r/DOZ2gRAaT52CHY/"; ## SECRET-DATA
+            }
+        }
+        user cernet2 {
+            uid 201;
+            class normal;
+            authentication {
+                encrypted-password "$1$1GEblfXW$WciKc1X6pRxGt.BksVqeO0"; ## SECRET-DATA
+                ssh-dsa "ssh-dss AAAAB3NzaC1kc3MAAACBAMrbILtNWr3hDrNAw8ubI3xDED+R23Y1LcC8060wKREHGGYatLJTLoumlt7qHHzAmuMzjsh7eIO/IYovHuMShZbET35z+PIUNWI1ugISbWwvjnsSTJCLvKvm+XG4JRdHWfs4phFmwoMvzEgQ1tM5dkZ2NtbS+Z7kS6qDA2qCigrjAAAAFQDjJSmAm6BByN8FEwkhA8UlEIb
+            }
+        }
+        user gaowenjun {
+            uid 2007;
+            class noc;
+            authentication {
+                encrypted-password "$1$6PUL1Cy/$bDXk9WTHjYQ459EAhePg9/"; ## SECRET-DATA
+            }
+        }
+        user juniper {
+            uid 2002;
+            class super-user;
+            authentication {
+                encrypted-password "$1$D7s/eDib$1sSxiFLusZsDaadB.1FiP."; ## SECRET-DATA
+            }
+        }
+        user kfp {
+            uid 2006;
+            class super-user;
+            authentication {
+                encrypted-password "$1$T7xdY67k$NB/lVRcHycNCmcSEDghyb1"; ## SECRET-DATA
+            }
+        }
+        user lifuliang {
+            uid 2008;
+            class nms-dev;
+            authentication {
+                encrypted-password "$1$3r/FZEvd$FgElGURXnCc6ua.O6ImuY1"; ## SECRET-DATA
+            }
+        }
+        user zhzhy {
+            uid 2001;
+            class super-user;
+            authentication {
+                encrypted-password "$1$UdBmOwy/$VzHqnom/nwTknV9QucDSb0"; ## SECRET-DATA
+            }
+        }
+    }
+    static-host-mapping {
+        gz6 inet6 2001:da8:1:ff::3;
+    }
+    services {
+        ssh {
+            root-login deny;
+        }
+    }
+    syslog {
+        archive size 10m;
+        user * {
+            any alert;
+        }
+        inactive: host 202.38.120.150 {
+            any notice;
+            user any;
+            facility-override local0;
+        }
+        /* For AnChangQing rsyslog Server */                                                                                                                                                                                                                    
+        host 219.243.208.137 {
+            any info;
+            facility-override local0;
+            log-prefix CERNET2_BJ-PoP_Juniper;
+        }
+        file messages {
+            any notice;
+        }
+        file auth {
+            authorization info;
+        }
+        time-format year;
+    }
+    commit synchronize;
+    ntp {
+        server 202.112.0.38;
+        server 202.112.0.7;
+        server 202.112.10.60;
+    }
+}
+chassis {
+    redundancy {
+        routing-engine 0 master;
+        graceful-switchover;
+    }
+    alarm {
+        management-ethernet {
+            link-down ignore;
+        }
+    }
+}
+interfaces {
+    so-0/0/0 {
+        apply-groups INTERFACE-BACKBONE;
+        description 10G_to_WuHan-Core_J;
+        clocking internal;
+        unit 0 {
+            family inet {
+                address 202.38.120.1/30;
+            }
+            family inet6 {
+                address 2001:da8:1:1::1/64;
+            }
+            family mpls;
+        }
+    }
+    so-0/1/0 {
+        apply-groups INTERFACE-BACKBONE;
+        description 2.5G_to_ZhengZhou-Core_J;
+        clocking internal;
+        encapsulation ppp;
+        sonet-options {
+            fcs 32;
+            payload-scrambler;
+        }
+        unit 0 {
+            family inet {                                                                                                                                                                                                                                       
+                address 202.38.120.17/30;
+            }
+            family inet6 {
+                address 2001:da8:1:5::1/64;
+            }
+            family mpls;
+        }
+    }
+    so-0/1/1 {
+        apply-groups INTERFACE-BACKBONE;
+        description 2.5G_to_TianJin-Core_J;
+        clocking internal;
+        encapsulation ppp;
+        sonet-options {
+            fcs 32;
+            payload-scrambler;
+        }
+        unit 0 {
+            family inet {
+                address 202.38.120.85/30;
+            }
+            family inet6 {
+                address 2001:da8:1:16::1/64;
+            }
+            family mpls;
+        }
+    }
+    so-0/1/2 {
+        apply-groups INTERFACE-BACKBONE;
+        description 2.5G_to_ShenYang-Core_J;
+        clocking internal;
+        encapsulation ppp;
+        sonet-options {
+            fcs 32;
+            payload-scrambler;
+        }
+        unit 0 {
+            family inet {
+                address 202.38.120.89/30;
+            }
+            family inet6 {
+                address 2001:da8:1:17::1/64;
+            }
+            family mpls;
+        }
+    }
+    so-0/1/3 {
+        apply-groups INTERFACE-BACKBONE;
+        description 2.5G_to_ShenYang-Core_J-2_L2VPN;
+        disable;
+        keepalives interval 3600;
+        mtu 1600;
+        clocking internal;
+        encapsulation ppp;
+        sonet-options {
+            fcs 32;
+            payload-scrambler;                                                                                                                                                                                                                                  
+        }
+        unit 0 {
+            family inet {
+                mtu 1500;
+                address 202.38.120.21/30;
+            }
+            family inet6 {
+                mtu 1500;
+                address 2001:da8:1:6::1/64;
+            }
+            family mpls {
+                mtu 1550;
+            }
+        }
+    }
+    so-0/2/0 {
+        description "Spared POS 2.5 LR";
+    }
+    so-0/2/1 {
+        description 2.5G_to_BeiJing-Edge_B-3;
+        clocking internal;
+        encapsulation ppp;
+        sonet-options {
+            fcs 32;
+            payload-scrambler;
+        }
+        unit 0 {
+            family inet {
+                address 10.3.1.1/30;
+            }
+            family inet6 {
+                address 2001:da8:1:301::1/64;
+            }
+            family mpls;
+        }
+    }
+    so-0/2/2 {
+        description 2.5G_to_BeiJing-Edge_B-4;
+        clocking internal;
+        encapsulation ppp;
+        sonet-options {
+            fcs 32;
+            payload-scrambler;
+        }
+        unit 0 {
+            family inet {
+                address 10.4.1.1/30;
+            }
+            family inet6 {
+                address 2001:da8:1:401::1/64;
+            }
+            family mpls;
+        }
+    }
+    so-0/2/3 {
+        description 2.5G_to_BeiJing-Edge_B;
+        keepalives interval 3600;                                                                                                                                                                                                                               
+        mtu 1600;
+        clocking internal;
+        encapsulation ppp;
+        sonet-options {
+            fcs 32;
+            payload-scrambler;
+        }
+        unit 0 {
+            family inet {
+                address 202.38.120.181/30;
+            }
+            family inet6 {
+                address 2001:da8:1:101::1/64;
+            }
+            family mpls;
+        }
+    }
+    so-0/3/1 {
+        apply-groups INTERFACE-BACKBONE;
+        description 2.5G_to_XiAn-Core_J-2_L2VPN;
+        clocking internal;
+        encapsulation ppp;
+        sonet-options {
+            fcs 32;
+            payload-scrambler;
+        }
+        unit 0 {
+            family inet {
+                address 202.38.120.41/30;
+            }
+            family inet6 {
+                address 2001:da8:1:b::1/64;
+            }
+            family mpls;
+        }
+    }
+    so-0/3/2 {
+        description 2.5G_to_BeiJing-Edge_Hi;
+        encapsulation ppp;
+        sonet-options {
+            rfc-2615;
+        }
+        unit 0 {
+            family inet {
+                address 219.243.214.209/30;
+            }
+        }
+    }
+    so-0/3/3 {
+        description 2.5G_to_BeiJing-Edge_NE5000;
+        encapsulation ppp;
+        sonet-options {
+            rfc-2615;
+        }
+        unit 0 {
+            family inet {
+                address 219.243.214.245/30;                                                                                                                                                                                                                     
+            }
+        }
+    }
+    ge-1/0/0 {
+        description 10G_to_ShenYang-Core_J_L2VPN;
+        unit 0 {
+            family inet {
+                address 202.38.120.53/30;
+            }
+            family inet6 {
+                address 2001:da8:1:e::1/64;
+            }
+        }
+    }
+    ge-1/1/0 {
+        description 10G_to_CNGI-6IX_v6;
+        mtu 9192;
+        unit 0 {
+            family inet6 {
+                filter {
+                    input sava-ctc2bw;
+                    output ipv6-sample;
+                }
+                address 2001:252:0:1::1/64;
+            }
+            family mpls;
+        }
+    }
+    ge-1/2/0 {
+        description 10G_to_BeiJing-Edge_NE40e;
+        unit 0 {
+            family inet {
+                address 219.243.214.249/30 {
+                    primary;
+                }
+                address 10.5.1.1/30;
+            }
+            family inet6 {
+                filter {
+                    input-list [ cos-ipv6_edge sava-bw2ctc ];
+                    output ipv6-sample;
+                }
+                address 2001:da8:1:501::1/64;
+            }
+        }
+    }
+    ge-1/3/0 {
+        description 1G_to_FIT_Show_Center;
+        vlan-tagging;
+        unit 219 {
+            vlan-id 219;
+            family inet {
+                address 219.243.215.65/26;
+            }
+            family inet6 {
+                filter {
+                    input noc;                                                                                                                                                                                                                                  
+                }
+                address 2001:da8:bd:1::1/64;
+            }
+        }
+    }
+    ge-1/3/1 {
+        description 1G_to_CERNET-r0a;
+        link-mode full-duplex;
+        unit 0 {
+            family inet {
+                inactive: filter {
+                    input CERNET-out;
+                    output CERNET-in;
+                }
+                address 202.112.61.130/30;
+            }
+            family inet6 {
+                address 2001:250:C000:63::2/64;
+            }
+        }
+    }
+    ge-1/3/2 {
+        description 1G_to_Routing_Server;
+        unit 0 {
+            family inet6 {
+                address 2001:da8:ff:101::1/64;
+                address 2001:250:ffca:266c:100::/70;
+                address 2001:da8:feed:1::1/64;
+            }
+        }
+    }
+    ge-1/3/3 {
+        description 1G_to_FIT_Basement_TV-Wall;
+        mtu 9000;
+        unit 0 {
+            family inet {
+                address 202.38.120.169/29;
+            }
+            family inet6 {
+                address 2001:250:2::1/64;
+            }
+        }
+    }
+    ge-1/3/4 {
+        description 1G_to_SAVA_Box1;
+        unit 0 {
+            family inet6 {
+                filter {
+                    input log1003;
+                    output log1003;
+                }
+                address 2001:da8:1:1003::1/64;
+            }
+        }
+    }
+    ge-1/3/5 {
+        description 1G_to_SAVA-Box2;                                                                                                                                                                                                                            
+        unit 0 {
+            family inet6 {
+                address 2001:da8:1:1004::1/64;
+            }
+        }
+    }
+    ge-1/3/6 {
+        description 1G_to_SOHU-10th;
+        mtu 9000;
+        unit 0 {
+            family inet {
+                address 219.243.208.65/29;
+            }
+            family inet6 {
+                address 2001:da8:ff3a:c8fe:fe00::/64;
+            }
+        }
+    }
+    ge-1/3/7 {
+        description 1G_to_MainBuilding_LectureHall;
+        unit 0 {
+            family inet {
+                address 219.243.214.81/28;
+            }
+            family inet6 {
+                address 2001:da8:1:2107::1/64;
+            }
+        }
+    }
+    ge-1/3/8 {
+        description 1G_to_Google_IPv6;
+        unit 0 {
+            family inet6 {
+                address 2001:da8:1:1002::1/64;
+            }
+        }
+    }
+    ge-1/3/9 {
+        description 1G_to_WLZX-MB_T320;
+        mtu 9000;
+        unit 0 {
+            family inet {
+                address 219.243.208.21/30;
+            }
+            family inet6 {
+                address 2001:da8:1:1001::1/64;
+            }
+        }
+    }
+    ge-2/0/0 {
+        description 1G_to_RX1-IPv4;
+        unit 0 {
+            family inet {
+                address 202.112.61.254/30;
+            }
+        }
+    }                                                                                                                                                                                                                                                           
+    ge-2/0/1 {
+        description 1G_to_IPv6_Monitoring_Server;
+        unit 0 {
+            family inet6 {
+                address 2001:da8:ff:301::1/64;
+            }
+        }
+    }
+    ge-2/0/2 {
+        description 1G_to_Local-Access-sw_Cisco2950_219.243.208.14;
+        vlan-tagging;
+        unit 10 {
+            description "For Service & Management LAN";
+            vlan-id 10;
+            family inet {
+                address 202.38.120.241/28;
+            }
+            family inet6 {
+                address 2001:da8:1:100::1/64;
+            }
+        }
+        unit 20 {
+            description "For Management-2 LAN";
+            vlan-id 20;
+            family inet {
+                address 219.243.208.1/28;
+            }
+            family inet6 {
+                address 2001:da8:ff::1/64;
+            }
+        }
+        unit 30 {
+            description "For CMK-RouteServer KVM";
+            vlan-id 30;
+            family inet {
+                address 219.243.206.14/29;
+            }
+        }
+    }
+    ge-2/0/3 {
+        description 1G_to_Netflow_Server;
+        unit 0 {
+            family inet {
+                address 192.168.208.1/30;
+            }
+        }
+    }
+    gr-2/1/0 {
+        unit 0 {
+            description Tunnel_to_BGP_Monitor_TEIN2;
+            tunnel {
+                source 210.25.189.68;
+                destination 202.179.242.100;
+            }
+            family inet6 {
+                address 2001:da8:1:f001::1/64;
+            }                                                                                                                                                                                                                                                   
+        }
+    }
+    sp-2/1/0 {
+        unit 0 {
+            family inet;
+            family inet6;
+        }
+    }
+    ge-2/2/0 {
+        description 1G_to_Dragon-Lab;
+        unit 0 {
+            family inet {
+                address 202.38.120.189/29;
+            }
+            family inet6 {
+                inactive: filter {
+                    input ivi-qos;
+                    output ivi-qos;
+                }
+                address 2001:DA8:1:30::1/64;
+            }
+        }
+    }
+    ge-2/2/1 {
+        description 1G_to_3TNet_vlan-ccc;
+        vlan-tagging;
+        encapsulation vlan-ccc;
+        unit 0 {
+            encapsulation vlan-ccc;
+            vlan-id 600;
+        }
+        unit 1 {
+            encapsulation vlan-ccc;
+            vlan-id 1000;
+        }
+        unit 2 {
+            description 202.38.100/24_For_Video_Conference;
+            encapsulation vlan-ccc;
+            vlan-id 800;
+        }
+    }
+    ge-2/3/0 {
+        description 1G_to_XinAnBan-Access;
+        unit 0 {
+            family inet6 {
+                address 2001:da8:1:ffff::1/64;
+            }
+        }
+    }
+    ge-2/3/1 {
+        description 1G_to_2960SW;
+        vlan-tagging;
+        unit 10 {
+            description "For NMS-Group SunFire Server";
+            vlan-id 10;
+            family inet {
+                address 219.243.213.129/29;                                                                                                                                                                                                                     
+            }
+            family inet6 {
+                address 2001:da8:ff:201::1/64;
+            }
+        }
+        unit 20 {
+            description "For NMS-Group Fault&Flow Server";
+            vlan-id 20;
+            family inet {
+                address 219.243.208.33/28 {
+                    primary;
+                }
+            }
+            family inet6 {
+                address 2001:da8:ff:100::1/64;
+            }
+        }
+        unit 30 {
+            description "For PlanetLab Server THU1&THU2 DELL-R410x2";
+            vlan-id 30;
+            family inet {
+                address 219.243.208.49/28;
+            }
+            family inet6 {
+                address 2001:da8:ff:200::1/64;
+            }
+        }
+        unit 40 {
+            description "For NMS-Group Cloud Server";
+            vlan-id 40;
+            family inet {
+                address 219.243.208.129/26;
+            }
+            family inet6 {
+                address 2001:da8:ff:300::1/64;
+            }
+        }
+    }
+    ge-3/0/0 {
+        description 10G_to_Juniper-CoreSwitch;
+        vlan-tagging;
+        unit 200 {
+            description to_CNGI-NOC_VM-Server_LAN;
+            vlan-id 200;
+            family inet {
+                address 219.243.208.193/26;
+            }
+            family inet6 {
+                address 2001:da8:ff:303::1/64;
+            }
+        }
+        unit 201 {
+            description to_CNGI-NOC_Switch-Management_LAN;
+            vlan-id 201;
+            family inet {
+                address 219.243.215.1/26;
+            }                                                                                                                                                                                                                                                   
+        }
+        unit 202 {
+            description to_206_for_ZhangXuan_AV-Lan;
+            vlan-id 202;
+            family inet {
+                address 219.243.208.81/28;
+            }
+            family inet6 {
+                address 2001:da8:ff:304::1/64;
+            }
+        }
+        unit 1002 {
+            description to_DragonLab;
+            vlan-id 1002;
+        }
+    }
+    ge-3/1/0 {
+        description 1G_to_CNGI-6IX_v4;
+        mtu 9192;
+        gigether-options {
+            ignore-l3-incompletes;
+        }
+        unit 0 {
+            family inet {
+                filter {
+                    input looptest;
+                    output CERNET-out;
+                }
+                address 210.25.189.68/27;
+            }
+            family mpls;
+        }
+    }
+    ge-3/1/1 {
+        description 1G_to_VM_DELL_Server;
+        unit 0 {
+            family inet {
+                address 219.243.208.97/27;
+            }
+            family inet6 {
+                address 2001:da8:ff:302::1/64;
+            }
+        }
+    }
+    ge-3/1/4 {
+        description 1G_to_XinAnZhongXin_Netflow_BGP_Monitor;
+        unit 0 {
+            family inet {
+                address 219.243.208.17/30;
+            }
+            family inet6 {
+                address 2001:da8:1:1005::1/64;
+            }
+        }
+    }
+    ge-3/1/5 {
+        description 1G_to_CERNET-r0a_2;                                                                                                                                                                                                                         
+        link-mode full-duplex;
+        unit 0 {
+            family inet {
+                inactive: filter {
+                    input CERNET-out;
+                    output CERNET-in;
+                }
+                address 202.112.61.230/30;
+            }
+            family inet6 {
+                address 2001:250:C000:64::2/64;
+            }
+        }
+    }
+    xe-3/2/0 {
+        description 10G_to_PKU-Core_J;
+        unit 0 {
+            family inet {
+                address 202.38.120.105/30;
+            }
+            family inet6 {
+                address 2001:da8:1:1b::1/64;
+            }
+        }
+    }
+    xe-3/3/0 {
+        description 10G_to_BUPT-Core_J;
+        unit 0 {
+            family inet {
+                address 202.38.120.109/30;
+            }
+            family inet6 {
+                address 2001:da8:1:1c::1/64;
+            }
+        }
+    }
+    so-7/0/0 {
+        description 40G_to_WH-Loop-temp;
+        no-keepalives;
+        clocking internal;
+        encapsulation cisco-hdlc;
+        sonet-options {
+            rfc-2615;
+        }
+        unit 0 {
+            family inet {
+                inactive: address 219.243.213.1/30;
+            }
+        }
+    }
+    lo0 {
+        description Beijing-Core_Tsinghua_Juniper;
+        unit 0 {
+            family inet {
+                filter {
+                    input RE_filter-v4;
+                }                                                                                                                                                                                                                                               
+                address 202.38.120.192/32;
+            }
+            family inet6 {
+                filter {
+                    input RE_filter-v6;
+                }
+                address 2001:da8:1:ff::1/128;
+                address 2001:da8::1/128;
+            }
+        }
+    }
+}
+forwarding-options {
+    sampling {
+        input {
+            rate 100;
+        }
+        family inet6 {
+            output {
+                flow-active-timeout 900;
+                flow-server 192.168.208.2 {
+                    port 63396;
+                    autonomous-system-type origin;
+                    no-local-dump;
+                    version9 {
+                        template {
+                            ipv6;
+                        }
+                    }
+                }
+                flow-server 202.38.120.251 {
+                    port 9000;
+                    autonomous-system-type origin;
+                    no-local-dump;
+                    version9 {
+                        template {
+                            ipv6;
+                        }
+                    }
+                }
+                flow-server 202.112.25.112 {
+                    port 9000;
+                    autonomous-system-type origin;
+                    no-local-dump;
+                    version9 {
+                        template {
+                            ipv6;
+                        }
+                    }
+                }
+                inactive: flow-server 202.127.217.54 {
+                    port 2066;
+                    autonomous-system-type origin;
+                    no-local-dump;
+                    version9 {
+                        template {
+                            ipv6;                                                                                                                                                                                                                               
+                        }
+                    }
+                }
+                flow-server 219.243.208.44 {
+                    port 63000;
+                    autonomous-system-type origin;
+                    no-local-dump;
+                    version9 {
+                        template {
+                            ipv6;
+                        }
+                    }
+                }
+                interface sp-2/1/0 {
+                    source-address 202.38.120.192;
+                }
+            }
+        }
+    }
+    inactive: port-mirroring {
+        family inet6 {
+            input {
+                rate 1;
+            }
+            output {
+                interface ge-1/3/0.0 {
+                    next-hop 2001:da8:1:2107::2;
+                }
+            }
+        }
+    }
+    hash-key {
+        family mpls {
+            label-1;
+            payload {
+                ip;
+            }
+        }
+    }
+}
+snmp {
+    community CERNET2 {
+        authorization read-only;
+    }
+    community ocean {
+        authorization read-only;
+    }
+    community LanD00 {
+        authorization read-only;
+    }
+    community Test {
+        authorization read-only;
+    }
+    trap-options {
+        source-address lo0;
+    }
+    inactive: trap-group cernet2 {                                                                                                                                                                                                                              
+        version v2;
+        categories {
+            authentication;
+            chassis;
+            link;
+            remote-operations;
+            inactive: routing;
+            startup;
+            rmon-alarm;
+            vrrp-events;
+            configuration;
+            sonet-alarms;
+        }
+        targets {
+            202.38.120.243;
+            202.179.242.101;
+            210.25.130.220;
+            202.38.120.252;
+            2001:da8:1:100::110;
+            219.243.208.38;
+            219.243.208.39;
+            2001:da8:ff:100::43;
+            166.111.143.195;
+            166.111.143.199;
+        }
+    }
+    inactive: trap-group testfortianbin {
+        categories {
+            authentication;
+            chassis;
+            link;
+            remote-operations;
+            routing;
+            startup;
+            rmon-alarm;
+            vrrp-events;
+            configuration;
+            sonet-alarms;
+        }
+        targets {
+            210.25.130.216;
+        }
+    }
+}
+routing-options {
+    graceful-restart;
+    interface-routes {
+        rib-group {
+            inet loopback-route;
+            inet6 sava-test;
+        }
+    }
+    rib inet6.0 {
+        static {
+            route 2001:da8:1::/48 discard;
+            route 2001:da8::/32 discard;
+            route 2001:DA8:BE::/64 next-hop 2001:da8:1:100::50;                                                                                                                                                                                                 
+            route 2001:DA8:1:ff::26/128 next-hop 2001:da8:1:100::50;
+            route 2001:da8:ff::/48 discard;
+            /* CNGI-NOC Block */
+            route 2001:da8:bd::/48 discard;
+            route 2001:da8:e0::/48 discard;
+            route 2001:250:2::/48 discard;
+            route 2001:da8:226::/48 next-hop 2001:da8:1:f226::2;
+            route 2001:da8:aaae::/48 discard;
+            route 2001:250:ffca:266c::/64 discard;
+            route 2001:da8:3fff::/48 discard;
+            route 2001:da8:10::/48 discard;
+            route 2001:da8:8fff::/48 discard;
+            inactive: route ::/0 next-hop 2001:252:0:1::101;
+            route 2001:DA8:20B::/48 next-hop 2001:da8:1:ffff::2;
+            route 2001:da8:1:fffe::/64 next-hop 2001:da8:1:ffff::2;
+            /* Multicast L1-Gateway */
+            route 2001:da8:feed::/48 discard;
+            /* SSM 100 CPN Block */
+            route 2001:da8:feee::/48 discard;
+            route 2001:da8:bd:110::/64 next-hop 2001:da8:bd:1::110;
+            route 2001:da8:bd:210::/64 next-hop 2001:da8:bd:1::110;
+            route 2001:DA8:FF3A:C8FB:300::/128 discard;
+            /* CNGI-6IX HK-IX address block */
+            route 2001:7fa:0:1::/64 next-hop 2001:252:0:1::101;
+            route 2001:da8:bd:310::/64 next-hop 2001:da8:bd:1::109;
+            inactive: route 2001:250:0:1::3/128 next-hop [ 2001:250:C000:63::1 2001:250:C000:64::1 ];
+            route 2001:250::/32 discard;
+        }
+    }
+    rib inet6.2 {
+        static {
+            route 2001:da8::/32 discard;
+            route 2001:250:2::/48 discard;
+        }
+    }
+    static {
+        route 219.243.215.192/26 next-hop 202.38.120.182;
+        route 202.38.120.0/24 discard;
+        route 219.243.201.0/24 discard;
+        route 219.243.208.0/21 discard;
+        route 219.243.215.160/27 next-hop 202.38.120.245;
+        route 202.38.120.217/32 next-hop 202.38.120.245;
+        route 0.0.0.0/0 next-hop 202.112.61.253;
+        route 219.243.206.0/24 discard;
+        route 219.243.213.0/26 next-hop 219.243.213.2;
+        route 219.243.212.1/32 next-hop 219.243.215.2;
+        /* test for tunet to cern */
+        route 219.243.214.224/30 next-hop 219.243.214.246;
+        /* test for tunet to cern */
+        route 59.66.10.0/24 next-hop 219.243.214.246;
+        /* test for tunet to cern */
+        inactive: route 166.111.32.0/24 next-hop 219.243.214.246;
+        route 219.243.214.192/28 next-hop 219.243.214.230;
+        /* DNSSEC */
+        inactive: route 42.83.199.0/24 next-hop 219.243.214.250;
+    }
+    rib-groups {                                                                                                                                                                                                                                                
+        loopback-route {
+            import-rib [ inet.0 inet.3 ];
+            import-policy loopback-only;
+        }
+        sava-test {
+            import-rib [ inet6.0 sava-ctc2bw.inet6.0 sava-bw2ctc.inet6.0 ];
+        }
+    }
+    autonomous-system 23910;
+    forwarding-table {
+        export [ select-lsp load-balancing ];
+    }
+    multicast {
+        ssm-map ssm-map-ipv6 {
+            policy ssm-policy;
+            source 2001:250:cccd::18;
+        }
+    }
+}
+protocols {
+    igmp {
+        interface all {
+            disable;
+        }
+        interface ge-1/3/3.0 {
+            version 2;
+        }
+        interface ge-1/3/6.0 {
+            version 2;
+        }
+        interface ge-1/3/0.0 {
+            version 2;
+        }
+    }
+    mld {
+        inactive: traceoptions {
+            file njgroup;
+            flag all;
+        }
+        interface all {
+            disable;
+        }
+        interface ge-1/3/3.0 {
+            version 2;
+        }
+        interface ge-1/3/6.0 {
+            version 1;
+        }
+        interface ge-1/3/2.0 {
+            version 2;
+        }
+        interface ge-1/3/4.0 {
+            version 2;
+        }
+        interface ge-1/3/0.0 {
+            version 2;
+        }                                                                                                                                                                                                                                                       
+        interface ge-0/2/1.0;
+    }
+    router-advertisement {
+        interface ge-2/0/2.10 {
+            prefix 2001:da8:1:100::/64;
+        }
+        inactive: interface ge-1/3/6.0 {
+            max-advertisement-interval 30;
+            min-advertisement-interval 10;
+            prefix 2001:da8:1:2105::/64;
+        }
+        interface ge-1/3/2.0 {
+            max-advertisement-interval 30;
+            min-advertisement-interval 10;
+            prefix 2001:da8:1:2101::/64;
+        }
+        inactive: interface ge-1/3/0.0 {
+            max-advertisement-interval 30;
+            min-advertisement-interval 10;
+            other-stateful-configuration;
+            prefix 2001:da8:bd:1::/64;
+        }
+        interface ge-1/3/5.0 {
+            max-advertisement-interval 30;
+            min-advertisement-interval 10;
+            prefix 2001:da8:1:2104::/64;
+        }
+        interface ge-1/3/8.0 {
+            max-advertisement-interval 30;
+            min-advertisement-interval 10;
+            prefix 2001:da8:1:6000::/64;
+        }
+        interface ge-1/3/7.0 {
+            max-advertisement-interval 30;
+            min-advertisement-interval 10;
+            prefix 2001:da8:1:6001::/64;
+        }
+        interface ge-2/0/2.20 {
+            prefix 2001:da8:ff::/64;
+        }
+        interface ge-3/1/2.10 {
+            max-advertisement-interval 30;
+            min-advertisement-interval 10;
+            prefix 2001:da8:ff:1::/64;
+        }
+        interface ge-2/3/1.40 {
+            max-advertisement-interval 30;
+            min-advertisement-interval 10;
+            prefix 2001:da8:ff:300::/64;
+        }
+    }
+    inactive: rsvp {
+        interface so-0/0/0.0;
+        interface all;
+    }
+    mpls {
+        admin-groups {                                                                                                                                                                                                                                          
+            oc48 0;
+            oc192 1;
+        }
+        label-switched-path bj->sh {
+            to 202.38.120.196;
+            admin-group include-all oc48;
+        }
+        label-switched-path bj->wh->sh {
+            to 202.38.120.196;
+            admin-group include-all oc192;
+        }
+        inactive: label-switched-path bj->sh_static {
+            to 202.38.120.196;
+            primary bj->sh_static;
+        }
+        path bj->sh_static {
+            202.38.120.2 loose;
+            202.38.120.10 loose;
+            202.38.120.14 loose;
+        }
+        interface all;
+        interface so-0/0/0.0 {
+            admin-group oc192;
+        }
+        interface so-0/1/0.0 {
+            admin-group oc48;
+        }
+        interface so-0/1/1.0 {
+            admin-group oc48;
+        }
+    }
+    bgp {
+        remove-private;
+        group ibgpv4-core {
+            type internal;
+            local-address 202.38.120.192;
+            family inet {
+                unicast;
+                labeled-unicast {
+                    rib {
+                        inet.3;
+                    }
+                }
+            }
+            export allow-inet-labeled-unicast;
+            neighbor 202.38.120.193 {
+                description to_cernet2_r-wh6;
+            }
+            neighbor 202.38.120.194 {
+                description to_cernet2_r-gz6;
+            }
+            neighbor 202.38.120.195 {
+                description to_cernet2_r-nj6;
+            }
+            neighbor 202.38.120.196 {
+                description to_cernet2_r-sh6;
+            }                                                                                                                                                                                                                                                   
+            neighbor 202.38.120.197 {
+                description to_cernet2_r-zhz6;
+            }
+            neighbor 202.38.120.198 {
+                description to_cernet2_r-tjn6;
+            }
+            neighbor 202.38.120.199 {
+                description to_cernet2_r-jnn6;
+            }
+            neighbor 202.38.120.200 {
+                description to_cernet2_r-sy6;
+            }
+            neighbor 202.38.120.201 {
+                description to_cernet2_r-dln6;
+            }
+            neighbor 202.38.120.202 {
+                description to_cernet2_r-chc6;
+            }
+            neighbor 202.38.120.203 {
+                description to_cernet2_r-hrb6;
+            }
+            neighbor 202.38.120.204 {
+                description to_cernet2_r-pku6;
+            }
+            neighbor 202.38.120.205 {
+                description to_cernet2_r-bupt6;
+            }
+            neighbor 202.38.120.206 {
+                description to_cernet2_r-buaa6;
+            }
+            neighbor 202.38.120.207 {
+                description to_cernet2_r-xa6;
+            }
+            neighbor 202.38.120.208 {
+                description to_cernet2_r-cd6;
+            }
+            neighbor 202.38.120.209 {
+                description to_cernet2_r-chq6;
+            }
+            neighbor 202.38.120.210 {
+                description to_cernet2_r-lzh6;
+            }
+            neighbor 202.38.120.211 {
+                description to_cernet2_r-hef6;
+            }
+            neighbor 202.38.120.212 {
+                description to_cernet2_r-hzh6;
+            }
+            neighbor 202.38.120.213 {
+                description to_cernet2_r-xmn6;
+            }
+            neighbor 202.38.120.214 {
+                description to_cernet2_r-chs6;
+            }
+            neighbor 202.38.120.215 {
+                description to_cernet2_r-fudan6;
+            }                                                                                                                                                                                                                                                   
+            neighbor 202.38.120.216 {
+                description to_cernet2_r-tongji6;
+            }
+        }
+        group ibgpv6-core {
+            type internal;
+            description to_cernet2_all_v6cores;
+            local-address 2001:da8:1:ff::1;
+            family inet6 {
+                unicast;
+            }
+            export [ ibgp-v6-core-ex-policy next-hop-self ];
+            neighbor 2001:DA8:1:ff::2 {
+                description to_cernet2_r-wh6;
+            }
+            neighbor 2001:DA8:1:ff::3 {
+                description to_cernet2_r-gz6;
+            }
+            neighbor 2001:DA8:1:ff::4 {
+                description to_cernet2_r-nj6;
+            }
+            neighbor 2001:DA8:1:ff::5 {
+                description to_cernet2_r-sh6;
+            }
+            neighbor 2001:DA8:1:ff::6 {
+                description to_cernet2_r-zhz6;
+            }
+            neighbor 2001:DA8:1:ff::7 {
+                description to_cernet2_r-tjn6;
+            }
+            neighbor 2001:DA8:1:ff::8 {
+                description to_cernet2_r-jnn6;
+            }
+            neighbor 2001:DA8:1:ff::9 {
+                description to_cernet2_r-sy6;
+            }
+            neighbor 2001:DA8:1:ff::10 {
+                description to_cernet2_r-dln6;
+            }
+            neighbor 2001:DA8:1:ff::11 {
+                description to_cernet2_r-chc6;
+            }
+            neighbor 2001:DA8:1:ff::12 {
+                description to_cernet2_r-hrb6;
+            }
+            neighbor 2001:DA8:1:ff::13 {
+                description to_cernet2_r-pku6;
+            }
+            neighbor 2001:DA8:1:ff::14 {
+                description to_cernet2_r-bupt6;
+            }
+            neighbor 2001:DA8:1:ff::15 {
+                description to_cernet2_r-buaa6;
+            }
+            neighbor 2001:DA8:1:ff::16 {
+                description to_cernet2_r-xa6;
+            }                                                                                                                                                                                                                                                   
+            neighbor 2001:DA8:1:ff::17 {
+                description to_cernet2_r-cd6;
+            }
+            neighbor 2001:DA8:1:ff::18 {
+                description to_cernet2_r-chq6;
+            }
+            neighbor 2001:DA8:1:ff::19 {
+                description to_cernet2_r-lzh6;
+            }
+            neighbor 2001:DA8:1:ff::20 {
+                description to_cernet2_r-hef6;
+            }
+            neighbor 2001:DA8:1:ff::21 {
+                description to_cernet2_r-hzh6;
+            }
+            neighbor 2001:DA8:1:ff::22 {
+                description to_cernet2_r-xmn6;
+            }
+            neighbor 2001:DA8:1:ff::23 {
+                description to_cernet2_r-chs6;
+            }
+            neighbor 2001:DA8:1:ff::25 {
+                description to_cernet2_r-tongji6;
+            }
+            neighbor 2001:da8:1:ff::24 {
+                description to_cernet2_r-fudan6;
+            }
+        }
+        group ebgp-v4-rx1 {
+            type external;
+            import ebgp-v4-im-common;
+            family inet {
+                unicast;
+            }
+            export v4-bgp;
+            peer-as 4538;
+            neighbor 202.112.61.253 {
+                description to_cernet_rx1;
+            }
+        }
+        inactive: group ebgp-v6-dragontap {
+            type external;
+            family inet6 {
+                unicast;
+            }
+            export v6-bgp;
+            neighbor 2001:250:C000:20::1 {
+                description to_cngi_r0k;
+                peer-as 23911;
+            }
+            inactive: neighbor 2001:250:C000:20::2 {
+                description to_cernet_r0a;
+                peer-as 4538;
+            }
+            neighbor 2001:250:C000:20::4 {
+                description to_nsfcnet_nqhu;
+                peer-as 9406;                                                                                                                                                                                                                                   
+            }
+            neighbor 2001:250:C000:20::5 {
+                description to_cj_br-cn;
+                peer-as 23912;
+            }
+        }
+        group ebgp-v6-edge {
+            type external;
+            import ebgp-v6-edge-im-policy;
+            family inet6 {
+                unicast;
+                multicast;
+            }
+            export ebgp-v6-edge-ex-policy;
+            peer-as 24348;
+            neighbor 2001:da8:1:101::2 {
+                description CNGI-BJ-IX2_tsinghua;
+            }
+            inactive: neighbor 2001:da8:1:201::2 {
+                description to_edge_GR4000;
+                local-address 2001:da8:1:201::1;
+            }
+            inactive: neighbor 2001:da8:10:301::2 {
+                description edge_NE5000e;
+            }
+            neighbor 2001:da8:1:501::2 {
+                description to_edge_NE40e;
+            }
+        }
+        group ebgp-v4-nms {
+            type external;
+            import FIT-bitway;
+            family inet {
+                unicast;
+            }
+            neighbor 219.243.208.46 {
+                description to_BGP_Monitor;
+                peer-as 65500;
+            }
+            neighbor 202.38.120.247 {
+                description to_BGP_Monitor2;
+                peer-as 65502;
+            }
+        }
+        group ebgp-v6-nms {
+            type external;
+            import FIT-bitway;
+            family inet6 {
+                unicast;
+            }
+            neighbor 2001:da8:ff:100::46 {
+                description to_BGP_Monitor;
+                peer-as 65500;
+            }
+            neighbor 2001:da8:1:100::70 {
+                description to_BGP_Monitor2;
+                peer-as 65502;                                                                                                                                                                                                                                  
+            }
+        }
+        group ebgp-v6-cngi {
+            type external;
+            import [ v6-common-import ebgp-v6-cngi-im-policy ];
+            family inet6 {
+                unicast;
+                multicast;
+            }
+            export ebgp-v6-cngi-ex-policy;
+            peer-as 23911;
+            neighbor 2001:252:0:1::101 {
+                description to_CNGI-6IX_RS1;
+            }
+        }
+        group ebgp-v4-dragon-lab {
+            type external;
+            import ebgp4-import-dl;
+            family inet {
+                unicast;
+                multicast;
+            }
+            inactive: export v4-bgp;
+            peer-as 24575;
+            neighbor 202.38.120.190;
+        }
+        group ibgp-v4-7206 {
+            type internal;
+            local-address 202.38.120.192;
+            import FIT-bitway;
+            family inet {
+                unicast;
+            }
+            neighbor 202.38.120.217 {
+                description to_Cisco-7206;
+            }
+        }
+        group ibgp-v6-7206 {
+            type internal;
+            local-address 2001:da8:1:ff::1;
+            family inet6 {
+                unicast;
+            }
+            export dvts;
+            neighbor 2001:da8:1:ff::26 {
+                description to_Cisco-7206;
+            }
+        }
+        group ebgp-v6-dragon-lab {
+            type external;
+            import ebgp-v6-edge-im-policy;
+            family inet6 {
+                unicast;
+                multicast;
+            }
+            export ebgp-v6-DL-ex-policy;
+            peer-as 24575;                                                                                                                                                                                                                                      
+            neighbor 2001:da8:1:30::2 {
+                description to_Dragonlab_Cisco-6509;
+            }
+        }
+        inactive: group ebgp-v6-cernet {
+            type external;
+            multihop;
+            local-address 2001:da8:1:ff::1;
+            import ebgp-v6-cernet-im-policy;
+            family inet6 {
+                unicast;
+            }
+            export [ v6-bgp no-export ];
+            peer-as 4538;
+            neighbor 2001:250:0:1::3 {
+                description to_cernet_r0a;
+            }
+        }
+        group ebgp-v4-tein2_mon {
+            type external;
+            multihop;
+            local-address 210.25.189.68;
+            import FIT-bitway;
+            family inet {
+                unicast;
+            }
+            peer-as 65501;
+            neighbor 202.179.242.100 {
+                description to_BGP_Monitor;
+            }
+        }
+        group ebgp-v6-tein2_mon {
+            type external;
+            import FIT-bitway;
+            family inet6 {
+                unicast;
+            }
+            peer-as 65501;
+            neighbor 2001:da8:1:f001::2 {
+                description to_BGP_Monitor;
+            }
+        }
+        inactive: group ibgp-v6-capability {
+            type external;
+            multihop;
+            import ibgp-v6-cap-im-policy;
+            family inet6 {
+                unicast;
+            }
+            neighbor 2001:da8:fff:ffff::2 {
+                description to_BGP_Route_Server;
+                peer-as 65500;
+            }
+        }
+        group ebgp-v4-cngi {
+            type external;
+            import ebgp-v4-cngi-im-policy;                                                                                                                                                                                                                      
+            family inet {
+                unicast;
+                labeled-unicast {
+                    rib {
+                        inet.3;
+                    }
+                }
+            }
+            export [ allow-inet-labeled-unicast ebgp-v4-cngi-ex-policy ];
+            peer-as 23911;
+            neighbor 210.25.189.65 {
+                description to_CNGI-6IX_RS1;
+            }
+        }
+        inactive: group ebgp-v4-DUT_temp {
+            type external;
+            import ebgp4-im-DUT;
+            family inet {
+                unicast;
+                multicast;
+                labeled-unicast {
+                    rib {
+                        inet.3;
+                    }
+                    explicit-null connected-only;
+                }
+            }
+            export ebgp4-ex-DUT;
+            peer-as 4843;
+            neighbor 219.243.215.2 {
+                description to_FIT-Basement_DUT;
+                graceful-restart;
+            }
+        }
+        inactive: group ebgp-v6-DUT_temp {
+            type external;
+            import ebgp6-im-DUT;
+            family inet6 {
+                unicast;
+                multicast;
+            }
+            export ebgp6-ex-DUT;
+            peer-as 4843;
+            neighbor 2001:da8:1:2105::2 {
+                description to_FIT-Basement_DUT-GE;
+                graceful-restart;
+            }
+        }
+        group ebgp-v6-WLZX-MB {
+            type external;
+            log-updown;
+            family inet6 {
+                unicast;
+            }
+            peer-as 65201;
+            neighbor 2001:da8:1:1001::2 {
+                description IPv6-Peering_to_WLZX-MB;                                                                                                                                                                                                            
+            }
+        }
+        inactive: group ibgp4-grid {
+            type internal;
+            local-address 202.38.120.192;
+            import import-deny-all;
+            family inet {
+                unicast;
+            }
+            export next-hop-self;
+            neighbor 210.25.189.116 {
+                description to_BGP-Grid;
+            }
+        }
+        group ebgp-v6-dragon-lab-zebra {
+            type external;
+            import FIT-bitway;
+            peer-as 65432;
+            neighbor 2001:DA8:1:30::3;
+        }
+        group ebgp-v6-google {
+            type external;
+            import ebgp-v6-google-im-policy;
+            export ebgp-v6-google-ex-policy;
+            peer-as 24424;
+            neighbor 2001:da8:1:1002::2 {
+                description to_Google_IPv6;
+                authentication-key "$9$IMeRhydVYgoGQFORSrMWdVwYZU.PTF6AreXNdb4o"; ## SECRET-DATA
+            }
+        }
+        inactive: group ebgp-v6-immc {
+            type external;
+            import import-deny-all;
+            family inet6 {
+                unicast;
+            }
+            export ebgp-v6-immc-ex-policy;
+            neighbor 2001:da8:ff:301::2 {
+                description "To IMMC0, contact: xzhao@cernet.edu.cn";
+                passive;
+                peer-as 65156;
+            }
+            neighbor 2001:468:d01:33::80df:330f {
+                description "To RouteViews.org, xzhao@cernet.edu.cn help@routeviews.org";
+                multihop {
+                    ttl 255;
+                }
+                peer-as 6447;
+            }
+        }
+        group ebgp-v4-WLZX-MB {
+            import ebgp-v4-wlzx-im-policy;
+            family inet {
+                unicast;
+            }
+            export ebgp-v4-wlzx-ex-policy;
+            peer-as 65201;                                                                                                                                                                                                                                      
+            neighbor 219.243.208.22 {
+                description to_WLZX-MB_T320;
+            }
+        }
+        group ebgp-v4-edge {
+            type external;
+            family inet {
+                unicast;
+            }
+            neighbor 219.243.214.250 {
+                description to_edge_ne40e;
+                inactive: import ebgp-v4-edge-im-policy;
+                export v4-default-route;
+                peer-as 24348;
+            }
+        }
+        group ebgp-v6-cernet-cngi {
+            type external;
+            import ebgp-v6-cernet-im-policy;
+            family inet6 {
+                unicast;
+            }
+            export [ v6-bgp no-export ];
+            peer-as 4538;
+            neighbor 2001:252:0:1::1001 {
+                description to_cernet_r0a_by_cngi;
+            }
+        }
+    }
+    msdp {
+        export msdp-common;
+        import msdp-common;
+        local-address 202.38.120.192;
+        peer 202.112.60.247;
+        inactive: peer 203.91.120.1;
+    }
+    ospf {
+        inactive: traceoptions {
+            file ospf.txt size 1m;
+            flag all;
+            flag error;
+            flag event;
+        }
+        inactive: traffic-engineering;
+        export [ direct-routes v4-static-route ];
+        reference-bandwidth 10g;
+        area 0.0.0.0 {
+            interface so-0/0/0.0;
+            interface so-0/1/0.0;
+            interface so-0/1/1.0;
+            interface so-0/1/2.0;
+            interface so-0/1/3.0 {
+                bfd-liveness-detection {
+                    minimum-interval 100;
+                    multiplier 3;
+                }
+            }                                                                                                                                                                                                                                                   
+            interface so-0/2/0.0;
+            interface so-0/2/1.0;
+            /* For NMS-Group Server */
+            interface ge-2/3/1.20 {
+                metric 20000;
+            }
+            interface so-0/2/2.0;
+            interface xe-3/2/0.0;
+            interface xe-3/3/0.0;
+            interface so-0/3/1.0;
+            interface so-0/3/0.0;
+            interface lo0.0 {
+                passive;
+            }
+            interface ge-1/0/0.0;
+        }
+    }
+    ospf3 {
+        export [ direct-routes static-routes ];
+        reference-bandwidth 10g;
+        area 0.0.0.0 {
+            interface so-0/0/0.0 {
+                inactive: metric 4;
+            }
+            interface so-0/1/0.0 {
+                inactive: metric 4;
+            }
+            interface so-0/1/1.0 {
+                inactive: metric 6;
+            }
+            interface so-0/1/2.0;
+            interface so-0/1/3.0 {
+                bfd-liveness-detection {
+                    minimum-interval 100;
+                    multiplier 3;
+                }
+            }
+            interface so-0/2/0.0;
+            interface so-0/2/1.0;
+            /* For NMS-Group Server */
+            interface ge-2/3/1.20 {
+                metric 20000;
+            }
+            interface so-0/2/2.0;
+            interface xe-3/2/0.0;
+            interface xe-3/3/0.0;
+            interface so-0/3/0.0;
+            interface so-0/3/1.0;
+            interface ge-1/0/0.0;
+        }
+    }
+    ldp {
+        inactive: preference 6;
+        interface ge-1/3/6.0 {
+            disable;
+        }
+        interface all;                                                                                                                                                                                                                                          
+        interface lo0.0;
+    }
+    pim {
+        inactive: traceoptions {
+            file pim-reg;
+            inactive: flag join receive detail;
+            flag register detail;
+        }
+        inactive: import pim-filter;
+        rp {
+            bootstrap {
+                family inet {
+                    import im-bs-policy;
+                    export ex-bs-policy;
+                }
+                family inet6 {
+                    import im-bs-policy;
+                    export ex-bs-policy;
+                }
+            }
+            local {
+                inactive: address 202.38.120.192;
+                family inet {
+                    address 202.38.120.192;
+                }
+                family inet6 {
+                    address 2001:da8::1;
+                }
+            }
+            embedded-rp {
+                group-ranges {
+                    ff7e::/12;
+                }
+            }
+            static {
+                inactive: address 2001:da8:1:ff::1;
+                inactive: address 2001:da8:bb::1;
+            }
+        }
+        interface all {
+            mode sparse;
+            version 2;
+        }
+        interface fxp0.0 {
+            disable;
+        }
+        interface lo0.0 {
+            disable;
+        }
+        interface ge-2/0/3.0 {
+            mode sparse;
+            priority 5;
+            version 2;
+        }
+    }
+    l2circuit {
+        neighbor 202.38.120.196 {                                                                                                                                                                                                                               
+            interface ge-2/2/1.0 {
+                virtual-circuit-id 16;
+                description to-3tnet-vlan600;
+                inactive: community rsvp-0;
+            }
+            interface ge-2/2/1.1 {
+                virtual-circuit-id 17;
+                description to-3tnet-vlan1000;
+                inactive: community rsvp-1;
+            }
+            interface ge-2/2/1.2 {
+                virtual-circuit-id 18;
+                description to-3tnet-vlan800;
+            }
+        }
+        inactive: neighbor 202.38.120.194 {
+            interface ge-1/0/0.0 {
+                virtual-circuit-id 50;
+                description to-gz-for-cernet1;
+            }
+        }
+        inactive: neighbor 202.38.120.195 {
+            interface ge-2/3/1.0 {
+                virtual-circuit-id 60;
+                description to-nj-for-zdht;
+            }
+        }
+        inactive: neighbor 219.243.212.1 {
+            inactive: interface ge-1/3/4.513 {
+                inactive: psn-tunnel-endpoint 219.243.212.1;
+                virtual-circuit-id 100;
+                description to_FIT-Basement_Huawei;
+                inactive: no-control-word;
+                mtu 9000;
+            }
+            interface ge-1/3/4.0 {
+                virtual-circuit-id 100;
+                description to_FIT-Basement_Cisco;
+                mtu 1500;
+            }
+        }
+        inactive: local-switching {
+            interface ge-2/0/3.0 {
+                end-interface {
+                    interface ge-2/2/1.0;
+                }
+            }
+        }
+    }
+    ppp {
+        inactive: traceoptions {
+            file ppp.txt;
+            level all;
+            flag all;
+        }
+    }
+}                                                                                                                                                                                                                                                               
+policy-options {
+    policy-statement FIT-bitway {
+        then reject;
+    }
+    policy-statement Smartbits {
+        from {
+            route-filter ::/0 prefix-length-range /32-/48;
+        }
+        then accept;
+    }
+    policy-statement allow-inet-labeled-unicast {
+        term inet-labeled-unicast {
+            from rib inet.3;
+            then accept;
+        }
+    }
+    policy-statement direct-routes {
+        term Exception {
+            from {
+                route-filter 2001:250:2::/48 orlonger;
+            }
+            then reject;
+        }
+        term Connected {
+            from protocol direct;
+            then {
+                external {
+                    type 1;
+                }
+                accept;
+            }
+        }
+    }
+    policy-statement dvts {
+        term DVTS {
+            from {
+                route-filter 2001:250:2::/48 exact;
+            }
+            then accept;
+        }
+        term Self {
+            from {
+                route-filter 2001:da8::/32 exact;
+            }
+            then accept;
+        }
+    }
+    policy-statement ebgp-v4-cngi-ex-policy {
+        term Self {
+            from {
+                route-filter 202.38.120.0/24 exact;
+                route-filter 219.243.208.0/21 exact;
+            }
+            then accept;
+        }
+        term Planet-lab {
+            from {                                                                                                                                                                                                                                              
+                route-filter 219.243.201.0/24 exact;
+                route-filter 219.243.206.0/24 exact;
+            }
+            then accept;
+        }
+        term Dragon-Lab {
+            from as-path Dragon-Lab;
+            then accept;
+        }
+        term WLZX {
+            from community cernet2-wlzx;
+            then accept;
+        }
+        inactive: term test-tunet {
+            from {
+                route-filter 59.66.10.0/24 exact;
+                route-filter 166.111.32.0/24 exact;
+            }
+            then accept;
+        }
+        term DNSSEC {
+            from as-path DNSSEC;
+            then accept;
+        }
+        term Others {
+            then reject;
+        }
+    }
+    policy-statement ebgp-v4-cngi-im-policy {
+        inactive: term CSTNET {
+            from as-path CSTNET;
+            then {
+                local-preference subtract 20;
+                accept;
+            }
+        }
+        term APAN {
+            from community cngi-apan;
+            then {
+                local-preference 120;
+                accept;
+            }
+        }
+        term Starlight {
+            from community cngi-starlight;
+            then {
+                local-preference 120;
+                accept;
+            }
+        }
+        term TEIN2 {
+            from community cngi-tein2;
+            then {
+                local-preference 120;
+                accept;
+            }
+        }                                                                                                                                                                                                                                                       
+        term Others {
+            then accept;
+        }
+    }
+    policy-statement ebgp-v4-edge-im-policy {
+        then reject;
+    }
+    policy-statement ebgp-v4-im-common {
+        term Invalid-Prefix {
+            from {
+                route-filter 10.0.0.0/8 orlonger;
+                route-filter 172.16.0.0/12 orlonger;
+                route-filter 192.168.0.0/16 orlonger;
+                route-filter 127.0.0.0/8 orlonger;
+                route-filter 224.0.0.0/3 orlonger;
+            }
+            then reject;
+        }
+        term Self-Network {
+            from {
+                route-filter 202.38.120.0/24 orlonger;
+            }
+            then reject;
+        }
+        term Others {
+            then accept;
+        }
+    }
+    policy-statement ebgp-v4-wlzx-ex-policy {
+        term CERNET2 {
+            from {
+                route-filter 202.38.120.0/24 exact;
+                route-filter 219.243.208.0/21 exact;
+                route-filter 219.243.201.0/24 exact;
+                route-filter 219.243.206.0/24 exact;
+            }
+            then accept;
+        }
+        term CNGI-6IX {
+            from {
+                route-filter 210.25.186.0/24 exact;
+                route-filter 210.25.187.0/24 exact;
+                route-filter 210.25.189.0/24 exact;
+            }
+            then accept;
+        }
+        term DRAGON-Lab {
+            from {
+                route-filter 203.91.120.0/22 exact;
+            }
+            then accept;
+        }
+        term International {
+            from community [ cngi-kreonet2 cngi-apan cngi-tein2 cngi-geant cngi-internet2 cngi-esnet cngi-nlr cngi-transpac ];
+            then accept;
+        }
+        term Others {                                                                                                                                                                                                                                           
+            then reject;
+        }
+    }
+    policy-statement ebgp-v4-wlzx-im-policy {
+        term WLZX {
+            from {
+                route-filter 202.38.99.0/24 exact;
+                route-filter 202.112.45.0/24 exact;
+                route-filter 202.112.49.0/24 exact;
+                route-filter 202.112.50.0/24 exact;
+                route-filter 202.112.54.0/24 exact;
+                route-filter 202.112.57.0/24 exact;
+                route-filter 202.112.58.0/24 exact;
+                route-filter 211.68.17.0/24 exact;
+                route-filter 202.112.39.0/24 exact;
+                route-filter 202.112.43.0/24 exact;
+                route-filter 202.112.44.0/24 exact;
+                route-filter 202.112.47.0/24 exact;
+                route-filter 202.112.51.0/24 exact;
+                route-filter 202.112.52.0/24 exact;
+                route-filter 202.112.55.0/24 exact;
+                route-filter 202.112.56.0/24 exact;
+                route-filter 211.68.126.0/24 exact;
+                route-filter 202.112.3.64/30 exact;
+                inactive: route-filter 202.112.3.0/24 exact;
+            }
+            then {
+                local-preference 120;
+                community add cernet2-wlzx;
+                accept;
+            }
+        }
+        term Others {
+            then reject;
+        }
+    }
+    policy-statement ebgp-v6-DL-ex-policy {
+        inactive: term DVTS {
+            from {
+                route-filter 2001:250:2::/64 exact;
+            }
+            then accept;
+        }
+        term Private-AS {
+            from as-path Private-AS;
+            then reject;
+        }
+        term CERNET2 {
+            from {
+                route-filter 2001:da8::/32 prefix-length-range /32-/48;
+            }
+            then accept;
+        }
+        term Others {
+            from {
+                route-filter 2001:250::/32 prefix-length-range /32-/48;
+                route-filter 3ffe:3200::/24 prefix-length-range /24-/48;                                                                                                                                                                                        
+            }
+            then accept;
+        }
+        term HK-IX2 {
+            from {
+                route-filter 2001:7fa:0:1::ca28:a100/120 exact;
+            }
+            then accept;
+        }
+        term IVI {
+            from {
+                route-filter 2001:250:ffca:266c::/64 exact;
+            }
+            then accept;
+        }
+        term Peers {
+            from {
+                protocol bgp;
+                route-filter 2000::/3 upto /35;
+            }
+            then accept;
+        }
+        term Default {
+            then reject;
+        }
+    }
+    policy-statement ebgp-v6-cernet-im-policy {
+        term Deny-128 {
+            from {
+                route-filter ::/0 prefix-length-range /120-/128;
+            }
+            then reject;
+        }
+        term Others {
+            then {
+                local-preference 80;
+                accept;
+            }
+        }
+    }
+    policy-statement ebgp-v6-cngi-ex-policy {
+        term CERNET2 {
+            from {
+                route-filter 2001:da8::/32 exact;
+            }
+            then accept;
+        }
+        term TUNET {
+            from {
+                route-filter 2402:f000::/32 exact;
+            }
+            then accept;
+        }
+        term ChengDu_Exp-net {
+            from {
+                route-filter 2402:2000::/32 exact;
+            }                                                                                                                                                                                                                                                   
+            then accept;
+        }
+        term BUPT_Mon-Net {
+            from {
+                route-filter 240c::/28 exact;
+            }
+            then accept;
+        }
+        term 3TNet {
+            from {
+                route-filter 2001:256::/32 exact;
+            }
+            then accept;
+        }
+        term RenDa {
+            from {
+                route-filter 2401:ec00::/32 exact;
+            }
+            then accept;
+        }
+        term TJU {
+            from {
+                route-filter 2403:ac00::/32 exact;
+            }
+            then accept;
+        }
+        term USTC {
+            from {
+                route-filter 2400:b600::/32 exact;
+            }
+            then accept;
+        }
+        term SJTU {
+            from {
+                route-filter 2403:d400::/32 exact;
+            }
+            then accept;
+        }
+        term Baidu {
+            from {
+                route-filter 2400:da00::/32 exact;
+            }
+            then accept;
+        }
+        term CNISP {
+            from community cernet2-cnisp;
+            then {
+                community add hkix-block;
+                accept;
+            }
+        }
+        term Tencent {
+            from {
+                route-filter 2402:4e00::/35 exact;
+            }
+            then {
+                community add hkix-block;                                                                                                                                                                                                                       
+                accept;
+            }
+        }
+        term Google {
+            from community cngi-google;
+            then accept;
+        }
+        term Alibaba {
+            from {
+                route-filter 2401:2e00::/32 exact;
+            }
+            then accept;
+        }
+        term CONAC {
+            from {
+                route-filter 2401:b400::/32 prefix-length-range /48-/48;
+            }
+            then accept;
+        }
+        term CERNET-250 {
+            from {
+                route-filter 2001:250::/32 exact;
+            }
+            then accept;
+        }
+        term Others {
+            then reject;
+        }
+    }
+    policy-statement ebgp-v6-cngi-im-policy {
+        term APAN {
+            from community cngi-apan;
+            then {
+                local-preference 120;
+                accept;
+            }
+        }
+        term Starlight {
+            from community cngi-starlight;
+            then {
+                local-preference 120;
+                accept;
+            }
+        }
+        term TEIN2 {
+            from community cngi-tein2;
+            then {
+                local-preference 120;
+                accept;
+            }
+        }
+        term Others {
+            then accept;
+        }
+    }
+    policy-statement ebgp-v6-edge-ex-policy {
+        term CERNET2 {                                                                                                                                                                                                                                          
+            from {
+                route-filter 2001:da8::/32 prefix-length-range /33-/48;
+            }
+            then accept;
+        }
+        term IVI {
+            from {
+                route-filter 2001:da8:ff3a:c880::/57 prefix-length-range /64-/64;
+            }
+            then accept;
+        }
+        term Others {
+            from {
+                route-filter 2001:250::/32 prefix-length-range /32-/48;
+                route-filter 3ffe:3200::/24 prefix-length-range /24-/48;
+            }
+            then accept;
+        }
+        term Peers {
+            from {
+                protocol bgp;
+                route-filter 2000::/3 upto /48;
+            }
+            then accept;
+        }
+        inactive: term Default {
+            from {
+                protocol aggregate;
+                route-filter ::/0 exact;
+            }
+            then accept;
+        }
+    }
+    policy-statement ebgp-v6-edge-im-policy {
+        term Special_Maoke-TUNET {
+            from {
+                route-filter 2001:DA8:FFCA:2676::/64 exact;
+                route-filter 2001:DA8:FFCA::/48 exact;
+            }
+            then accept;
+        }
+        term CERNET2 {
+            from {
+                route-filter 2001:da8::/32 prefix-length-range /33-/48;
+            }
+            then accept;
+        }
+        term Others {
+            from {
+                route-filter 2001:250::/32 prefix-length-range /32-/48;
+                route-filter 3ffe:3200::/24 prefix-length-range /24-/48;
+            }
+            then accept;
+        }
+        term Peers {
+            from {
+                route-filter 2000::/3 upto /35;                                                                                                                                                                                                                 
+            }
+            then accept;
+        }
+        term IVI {
+            from {
+                route-filter 2001:da8:ff3a:c880::/57 prefix-length-range /64-/64;
+            }
+            then accept;
+        }
+        term IVI-www.edu.cn {
+            from {
+                route-filter 2001:da8:ff3a:c8fd::/67 exact;
+            }
+            then accept;
+        }
+        term SSM_Source {
+            from {
+                route-filter 2001:da8:a0::/48 prefix-length-range /64-/64;
+            }
+            then accept;
+        }
+        term SSM_Bao {
+            from {
+                route-filter 2001:da8:feee::/48 prefix-length-range /64-/64;
+            }
+            then accept;
+        }
+        term CONAC {
+            from {
+                route-filter 2401:b400::/32 prefix-length-range /48-/48;
+            }
+            then accept;
+        }
+        term Default {
+            then reject;
+        }
+    }
+    policy-statement ebgp-v6-google-ex-policy {
+        term Self {
+            from {
+                protocol static;
+                route-filter ::/0 prefix-length-range /48-/48;
+            }
+            then accept;
+        }
+        term CERNET2-Access {
+            from as-path CERNET2;
+            then accept;
+        }
+        inactive: term All-v6 {
+            from {
+                route-filter 2000::/3 prefix-length-range /3-/48;
+            }
+            then accept;
+        }
+        term Others {
+            then reject;                                                                                                                                                                                                                                        
+        }
+    }
+    policy-statement ebgp-v6-google-im-policy {
+        term Google {
+            then accept;
+        }
+    }
+    policy-statement ebgp-v6-immc-ex-policy {
+        term internal-routes {
+            from {
+                route-filter 2001:da8::/32 longer;
+                route-filter 2402:f000::/32 longer;
+                route-filter 2402:2000::/32 longer;
+                route-filter 240c::/28 longer;
+                route-filter 2001:256::/32 longer;
+                route-filter 2401:ec00::/32 longer;
+                route-filter 2403:d400::/32 longer;
+            }
+            then reject;
+        }
+        term Others {
+            then accept;
+        }
+    }
+    policy-statement ebgp4-ex-DUT {
+        term Labeled-BJ {
+            from {
+                rib inet.3;
+                route-filter 202.38.120.192/32 exact;
+            }
+            then accept;
+        }
+        term Unicast-BJ {
+            from {
+                rib inet.0;
+                route-filter 202.38.120.192/32 exact;
+            }
+            then accept;
+        }
+        term Labeled-others {
+            from rib inet.3;
+            then reject;
+        }
+        term 1 {
+            from {
+                route-filter 202.38.120.0/24 exact;
+                route-filter 219.243.201.0/24 exact;
+                route-filter 219.243.208.0/21 exact;
+                route-filter 219.243.206.0/24 exact;
+            }
+            then accept;
+        }
+        term 2 {
+            from {
+                route-filter 202.38.120.0/24 longer;
+                route-filter 219.243.201.0/24 longer;
+                route-filter 219.243.208.0/21 longer;                                                                                                                                                                                                           
+                route-filter 219.243.206.0/24 longer;
+            }
+            then reject;
+        }
+        term 3 {
+            from {
+                route-filter 219.243.200.64/30 exact;
+                route-filter 219.243.200.108/30 exact;
+                route-filter 219.243.200.112/30 exact;
+            }
+            then accept;
+        }
+        inactive: term Others {
+            then reject;
+        }
+    }
+    policy-statement ebgp4-im-DUT {
+        term DUT {
+            from {
+                route-filter 219.243.212.0/26 exact;
+            }
+            then accept;
+        }
+        term Labeled {
+            from {
+                rib inet.3;
+                route-filter 219.243.212.1/32 exact;
+            }
+            then accept;
+        }
+        term Unicast {
+            from {
+                rib inet.0;
+                route-filter 219.243.212.1/32 exact;
+            }
+            then accept;
+        }
+        term Others {
+            then reject;
+        }
+    }
+    policy-statement ebgp4-im-r0a {
+        term Override_RX1 {
+            from protocol bgp;
+            then {
+                local-preference add 20;
+                accept;
+            }
+        }
+    }
+    policy-statement ebgp4-import-dl {
+        term Dragon-Lab {
+            from {
+                route-filter 203.91.120.0/22 exact;
+            }
+            then accept;
+        }                                                                                                                                                                                                                                                       
+        term 4over6 {
+            from {
+                route-filter 219.243.220.0/24 exact;
+                route-filter 219.243.221.0/24 exact;
+                route-filter 219.243.222.0/24 exact;
+                route-filter 219.243.223.0/27 exact;
+                route-filter 219.243.223.32/28 exact;
+            }
+            then accept;
+        }
+        term Others {
+            then reject;
+        }
+    }
+    policy-statement ebgp6-ex-DUT {
+        inactive: term DVTS {
+            from {
+                route-filter 2001:250:2::/64 exact;
+            }
+            then accept;
+        }
+        term Private-AS {
+            from as-path Private-AS;
+            then reject;
+        }
+        term CERNET2 {
+            from {
+                route-filter 2001:da8::/32 prefix-length-range /32-/48;
+            }
+            then accept;
+        }
+        term Others {
+            from {
+                route-filter 2001:250::/32 prefix-length-range /32-/48;
+                route-filter 3ffe:3200::/24 prefix-length-range /24-/48;
+            }
+            then accept;
+        }
+        term HK-IX2 {
+            from {
+                route-filter 2001:7fa:0:1::ca28:a100/120 exact;
+            }
+            then accept;
+        }
+        term IVI {
+            from {
+                route-filter 2001:250:ffca:266c::/64 exact;
+            }
+            then accept;
+        }
+        inactive: term FIT-basement_temp {
+            from {
+                route-filter 2001:250:2::/64 exact;
+            }
+            then accept;
+        }
+        term Subnet {                                                                                                                                                                                                                                           
+            from {
+                route-filter ::/0 prefix-length-range /49-/128;
+            }
+            then reject;
+        }
+    }
+    policy-statement ebgp6-im-DUT {
+        term DUT {
+            from {
+                route-filter 2001:da8:bb::/48 exact;
+            }
+            then accept;
+        }
+        term Others {
+            then reject;
+        }
+    }
+    policy-statement ebgp6-import-dl {
+        term Dragon-Lab {
+            from {
+                route-filter 2001:da8:217::/48 exact accept;
+            }
+        }
+        term Cernet2-temp-access {
+            from {
+                route-filter 2001:250:3402::/48 exact;
+                route-filter 2001:250:2100::/48 exact;
+            }
+            then accept;
+        }
+        term Others {
+            then reject;
+        }
+    }
+    policy-statement ex-bs-policy {
+        then reject;
+    }
+    policy-statement export-full-ipv6 {
+        from rib inet6.0;
+        then accept;
+    }
+    policy-statement ibgp-v6-cap-im-policy {
+        term All {
+            then {
+                community add cernet2-cap;
+                reject;
+            }
+        }
+    }
+    policy-statement ibgp-v6-core-ex-policy {
+        term Backbone {
+            from {
+                route-filter 2001:da8:1::/48 exact;
+                route-filter 2001:da8:ff::/48 exact;
+                route-filter 2001:da8:bd::/48 exact;
+                route-filter 2001:da8:10::/48 exact;
+                route-filter 2001:da8:feed::/48 exact;                                                                                                                                                                                                          
+            }
+            then accept;
+        }
+        term DVTS {
+            from {
+                route-filter 2001:250:2::/48 exact;
+            }
+            then accept;
+        }
+        term TunnelServer {
+            from {
+                route-filter 2001:da8:226::/48 exact;
+            }
+            then accept;
+        }
+        term Planet-Lab {
+            from {
+                route-filter 2001:da8:aaae::/48 exact;
+                route-filter 2001:da8:8fff::/48 exact;
+            }
+            then accept;
+        }
+        term Auth_IPv6 {
+            from {
+                route-filter 2001:da8:e0::/48 exact;
+            }
+            then accept;
+        }
+        term XAB {
+            from {
+                route-filter 2001:da8:20b::/48 exact;
+            }
+            then accept;
+        }
+    }
+    policy-statement im-bs-policy {
+        then reject;
+    }
+    policy-statement import-deny-all {
+        then reject;
+    }
+    policy-statement load-balancing {
+        then {
+            load-balance per-packet;
+        }
+    }
+    policy-statement loopback-only {
+        term loopback {
+            from {
+                route-filter 202.38.120.192/32 exact;
+            }
+            then accept;
+        }
+        term Others {
+            then reject;
+        }
+    }                                                                                                                                                                                                                                                           
+    policy-statement msdp-common {
+        term Group_domain-local {
+            from {
+                route-filter 224.0.2.2/32 exact;
+                route-filter 224.0.1.3/32 exact;
+                route-filter 224.0.1.24/32 exact;
+                route-filter 224.0.1.22/32 exact;
+                route-filter 224.0.1.2/32 exact;
+                route-filter 224.0.1.35/32 exact;
+                route-filter 224.0.1.60/32 exact;
+            }
+            then reject;
+        }
+        term Group_auto-rp {
+            from {
+                route-filter 224.0.1.39/32 exact;
+                route-filter 224.0.1.40/32 exact;
+            }
+            then reject;
+        }
+        term Group_scoped {
+            from {
+                route-filter 239.0.0.0/8 orlonger;
+            }
+            then reject;
+        }
+        term Group_SSM-range {
+            from {
+                route-filter 232.0.0.0/8 orlonger;
+            }
+            then reject;
+        }
+        term Source_private-loopback {
+            from {
+                source-address-filter 10.0.0.0/8 orlonger;
+                source-address-filter 172.16.0.0/12 orlonger;
+                source-address-filter 192.168.0.0/16 orlonger;
+                source-address-filter 127.0.0.0/8 orlonger;
+            }
+            then reject;
+        }
+    }
+    policy-statement next-hop-self {
+        then {
+            next-hop self;
+        }
+    }
+    policy-statement no-export {
+        then {
+            community add no-export;
+            accept;
+        }
+    }
+    policy-statement pim-filter {
+        term deny {
+            from {
+                route-filter 232.43.211.234/32 exact;                                                                                                                                                                                                           
+                inactive: source-address-filter 219.243.215.35/32 exact;
+            }
+            then reject;
+        }
+        term Others {
+            then accept;
+        }
+    }
+    policy-statement pim-v6-only {
+        term v6-group-address {
+            from {
+                route-filter ff00::/8 orlonger;
+            }
+            then accept;
+        }
+        term others {
+            then reject;
+        }
+    }
+    policy-statement select-lsp {
+        term bj-sh {
+            from community rsvp-0;
+            then {
+                install-nexthop lsp bj->sh;
+            }
+        }
+        term bj-wh-sh {
+            from community rsvp-1;
+            then {
+                install-nexthop lsp bj->wh->sh;
+            }
+        }
+        term default {
+            then next policy;
+        }
+    }
+    policy-statement ssm-policy {
+        term IPv6 {
+            from {
+                route-filter ff3e::2008/128 exact;
+            }
+            then accept;
+        }
+        then reject;
+    }
+    policy-statement static-routes {
+        from {
+            protocol static;
+            route-filter 2001:DA8:BE::/64 exact;
+            route-filter 2001:DA8:1:ff::26/128 exact;
+        }
+        then {
+            external {
+                type 1;
+            }
+            accept;
+        }                                                                                                                                                                                                                                                       
+    }
+    policy-statement v4-bgp {
+        term 1 {
+            from {
+                route-filter 202.38.120.0/24 exact;
+                route-filter 219.243.201.0/24 exact;
+                route-filter 219.243.208.0/21 exact;
+                route-filter 219.243.206.0/24 exact;
+            }
+            then accept;
+        }
+        term 2 {
+            from {
+                route-filter 202.38.120.0/24 longer;
+                route-filter 219.243.201.0/24 longer;
+                route-filter 219.243.208.0/21 longer;
+                route-filter 219.243.206.0/24 longer;
+            }
+            then reject;
+        }
+        term 3 {
+            from {
+                route-filter 219.243.200.64/30 exact;
+                route-filter 219.243.200.108/30 exact;
+                route-filter 219.243.200.112/30 exact;
+            }
+            then accept;
+        }
+        term Dragon-Lab {
+            from as-path Dragon-Lab;
+            then accept;
+        }
+        term DNSSEC {
+            from {
+                route-filter 42.83.199.0/24 exact;
+            }
+            then accept;
+        }
+        term Others {
+            then reject;
+        }
+    }
+    policy-statement v4-default-route {
+        term default {
+            from {
+                route-filter 0.0.0.0/0 exact;
+            }
+            then accept;
+        }
+        term subnet {
+            then reject;
+        }
+    }
+    policy-statement v4-static-route {
+        from {
+            protocol static;
+            route-filter 0.0.0.0/0 exact;                                                                                                                                                                                                                       
+        }
+        then {
+            external {
+                type 1;
+            }
+            accept;
+        }
+    }
+    policy-statement v6-bgp {
+        term Deny-CNGI {
+            from as-path Deny-CNGI;
+            then reject;
+        }
+        term Private-AS {
+            from as-path Private-AS;
+            then reject;
+        }
+        term CERNET2 {
+            from {
+                route-filter 2001:da8::/32 prefix-length-range /32-/48;
+            }
+            then next policy;
+        }
+        term Others {
+            from {
+                route-filter 2001:250::/32 prefix-length-range /32-/48;
+                route-filter 3ffe:3200::/24 prefix-length-range /24-/48;
+            }
+            then next policy;
+        }
+        term HK-IX2 {
+            from {
+                route-filter 2001:7fa:0:1::ca28:a100/120 exact;
+            }
+            then next policy;
+        }
+        term DVTS {
+            from {
+                route-filter 2001:250:2::/64 exact;
+            }
+            then next policy;
+        }
+        term IVI {
+            from {
+                route-filter 2001:250:ffca:266c::/64 exact;
+                route-filter 2001:da8:ff3a:c880::/57 prefix-length-range /64-/64;
+                route-filter 2001:da8:ff3a:c8fd::/67 exact;
+            }
+            then next policy;
+        }
+        term CMK {
+            from {
+                route-filter 2001:da8:ffca:2676::/64 exact;
+            }
+            then next policy;
+        }
+        term TengXun {                                                                                                                                                                                                                                          
+            from {
+                route-filter 2402:4e00::/35 exact;
+            }
+            then next policy;
+        }
+        term default {
+            then reject;
+        }
+    }
+    policy-statement v6-common-import {
+        term Subnet {
+            from {
+                route-filter 2000::/3 prefix-length-range /49-/128;
+            }
+            then reject;
+        }
+        term Others {
+            then next policy;
+        }
+    }
+    policy-statement v6-default-route {
+        from {
+            route-filter ::/0 exact;
+        }
+        then accept;
+    }
+    community cernet2-bii members 23910:45275;
+    community cernet2-cap members 23910:0;
+    community cernet2-cnisp members 23910:55466;
+    community cernet2-cute members 23910:38585;
+    community cernet2-tencent members 23910:64824;
+    community cernet2-wlzx members 23910:65201;
+    community cngi-apan members 23911:7660;
+    community cngi-esnet members 23911:293;
+    community cngi-geant members 23911:20965;
+    community cngi-google members 23911:24424;
+    community cngi-internet2 members 23911:11537;
+    community cngi-kreonet2 members 23911:17579;
+    community cngi-nlr members 23911:19401;
+    community cngi-starlight members 23911:10764;
+    community cngi-tein2 members 23911:24489;
+    community cngi-transpac members 23911:22388;
+    community hkix-block members 23910:44444;
+    community no-export members no-export;
+    community rsvp-0 members 7:48;
+    community rsvp-1 members 7:192;
+    as-path Private-AS .*64512-65534.*;
+    as-path Dragon-Lab 24575;
+    as-path CSTNET .*7497.*;
+    as-path Deny-CNGI .*23911.*;
+    as-path CERNET2 "[24348-24372]|.*45576|24575|18011";
+    as-path null-as "()";
+    as-path CERNET 4538.*;
+    as-path DNSSEC "24348 24409";
+}
+class-of-service {
+    classifiers {                                                                                                                                                                                                                                               
+        dscp-ipv6 v6-classifier {
+            forwarding-class default-traffic {
+                loss-priority high code-points be;
+            }
+            forwarding-class realtime-traffic {
+                loss-priority low code-points ef;
+            }
+            forwarding-class control-traffic {
+                loss-priority low code-points nc1;
+            }
+        }
+        exp mpls-classifier {
+            forwarding-class default-traffic {
+                loss-priority high code-points be;
+            }
+            forwarding-class realtime-traffic {
+                loss-priority low code-points ef;
+            }
+        }
+    }
+    forwarding-classes {
+        queue 0 default-traffic;
+        queue 1 realtime-traffic;
+        queue 2 control-traffic;
+    }
+    interfaces {
+        ge-* {
+            scheduler-map v6-mpls-map;
+            unit * {
+                classifiers {
+                    dscp-ipv6 v6-classifier;
+                    exp mpls-classifier;
+                }
+                rewrite-rules {
+                    dscp-ipv6 v6-rewrite;
+                    exp mpls-rewrite;
+                }
+            }
+        }
+        so-* {
+            scheduler-map v6-mpls-map;
+            unit * {
+                classifiers {
+                    dscp-ipv6 v6-classifier;
+                    exp mpls-classifier;
+                }
+                rewrite-rules {
+                    dscp-ipv6 v6-rewrite;
+                    exp mpls-rewrite;
+                }
+            }
+        }
+        xe-* {
+            scheduler-map v6-mpls-map;
+            unit * {
+                classifiers {
+                    dscp-ipv6 v6-classifier;                                                                                                                                                                                                                    
+                    exp mpls-classifier;
+                }
+                rewrite-rules {
+                    dscp-ipv6 v6-rewrite;
+                    exp mpls-rewrite;
+                }
+            }
+        }
+    }
+    rewrite-rules {
+        dscp-ipv6 v6-rewrite {
+            forwarding-class default-traffic {
+                loss-priority high code-point be;
+            }
+            forwarding-class realtime-traffic {
+                loss-priority low code-point ef;
+            }
+            forwarding-class control-traffic {
+                loss-priority low code-point nc1;
+            }
+        }
+        exp mpls-rewrite {
+            forwarding-class default-traffic {
+                loss-priority high code-point be;
+            }
+            forwarding-class realtime-traffic {
+                loss-priority low code-point ef;
+            }
+        }
+    }
+    scheduler-maps {
+        v6-mpls-map {
+            forwarding-class default-traffic scheduler default-scheduler;
+            forwarding-class realtime-traffic scheduler realtime-scheduler;
+            forwarding-class control-traffic scheduler control-scheduler;
+        }
+    }
+    schedulers {
+        default-scheduler {
+            transmit-rate remainder;
+            buffer-size remainder;
+            priority low;
+        }
+        realtime-scheduler {
+            priority strict-high;
+        }
+        control-scheduler {
+            transmit-rate percent 5;
+            buffer-size percent 5;
+            priority high;
+        }
+    }
+}
+firewall {
+    family inet {
+        filter cflow {
+            term sample {                                                                                                                                                                                                                                       
+                then {
+                    sample;
+                    accept;
+                }
+            }
+        }
+        filter CERNET-CERNET2 {
+            term TUNET {
+                from {
+                    source-address {
+                        166.111.125.9/32;
+                    }
+                    destination-address {
+                        203.91.120.0/22;
+                    }
+                    protocol icmp;
+                    icmp-type echo-request;
+                }
+                then {
+                    count C_to_C2;
+                    log;
+                    accept;
+                }
+            }
+            term TUNET_tr {
+                from {
+                    source-address {
+                        166.111.125.9/32;
+                    }
+                    destination-address {
+                        203.91.120.129/32;
+                    }
+                }
+                then {
+                    count C_to_C2-tr;
+                    log;
+                    accept;
+                }
+            }
+            term Others {
+                then accept;
+            }
+        }
+        filter CERNET2-CERNET {
+            term TUNET {
+                from {
+                    source-address {
+                        203.91.120.0/22;
+                    }
+                    destination-address {
+                        166.111.125.9/32;
+                    }
+                    protocol icmp;
+                    icmp-type echo-reply;
+                }
+                then {
+                    count C2_to_C;                                                                                                                                                                                                                              
+                    log;
+                    accept;
+                }
+            }
+            term Others {
+                then accept;
+            }
+        }
+        filter CERNET2-DL {
+            term TUNET {
+                from {
+                    source-address {
+                        166.111.125.9/32;
+                    }
+                    destination-address {
+                        203.91.120.0/22;
+                    }
+                    protocol icmp;
+                    icmp-type echo-request;
+                }
+                then {
+                    count C2_to_DL;
+                    log;
+                    accept;
+                }
+            }
+            term Others {
+                then accept;
+            }
+        }
+        filter DL-CERNET2 {
+            term TUNET {
+                from {
+                    source-address {
+                        203.91.120.0/22;
+                    }
+                    destination-address {
+                        166.111.125.9/32;
+                    }
+                    protocol icmp;
+                    icmp-type echo-reply;
+                }
+                then {
+                    count DL_to_C2;
+                    log;
+                    accept;
+                }
+            }
+            term Others {
+                then accept;
+            }
+        }
+        filter looptest {
+            term cngi-6ix {
+                from {
+                    source-address {
+                        210.25.189.0/24;                                                                                                                                                                                                                        
+                    }
+                    destination-address {
+                        202.38.120.192/32;
+                    }
+                }
+                then {
+                    log;
+                    accept;
+                }
+            }
+            term default {
+                then accept;
+            }
+        }
+    }
+    family inet6 {
+        filter BBS_IPv6 {
+            term telnet {
+                from {
+                    destination-address {
+                        2001:da8:200:100::238/128;
+                    }
+                    next-header tcp;
+                    destination-port telnet;
+                }
+                then {
+                    count telnet;
+                    accept;
+                }
+            }
+            term http {
+                from {
+                    destination-address {
+                        2001:da8:200:100::238/128;
+                    }
+                    next-header tcp;
+                    destination-port http;
+                }
+                then {
+                    count http;
+                    accept;
+                }
+            }
+            term icmp {
+                from {
+                    destination-address {
+                        2001:da8:200:100::238/128;
+                    }
+                    next-header icmpv6;
+                }
+                then {
+                    count icmp;
+                    accept;
+                }
+            }
+            term ssh {
+                from {                                                                                                                                                                                                                                          
+                    source-address {
+                        2001:250:f001:f002:211:43ff:fe30:bc2e/128;
+                    }
+                    destination-address {
+                        2001:da8:200:100::238/128;
+                    }
+                    next-header tcp;
+                    destination-port ssh;
+                }
+                then {
+                    count ssh;
+                    accept;
+                }
+            }
+            term other {
+                from {
+                    destination-address {
+                        2001:da8:200:100::238/128;
+                    }
+                }
+                then {
+                    count other;
+                    discard;
+                }
+            }
+            term non-BBS {
+                then accept;
+            }
+        }
+        filter so-0/2/0_ipv6_input {
+            term 1 {
+                then {
+                    count r-bupt6_ipv6_input;
+                    accept;
+                }
+            }
+        }
+        filter so-0/2/0_ipv6_output {
+            term 2 {
+                then {
+                    count r-bupt6_ipv6_output;
+                    accept;
+                }
+            }
+        }
+        filter ssmping {
+            term bupt {
+                from {
+                    source-address {
+                        2001:da8:ff:10b::2/128;
+                    }
+                    destination-address {
+                        FF3E::4321:1234/128;
+                    }
+                }
+                then {
+                    log;                                                                                                                                                                                                                                        
+                    accept;
+                }
+            }
+            term others {
+                then accept;
+            }
+        }
+        filter multicast-rate-limit {
+            term mcast {
+                from {
+                    destination-address {
+                        ff3e:40:2001:da8:1:ff:8000:1/128 except;
+                    }
+                }
+                then {
+                    policer multicast-policer;
+                    accept;
+                }
+            }
+            term Others {
+                then accept;
+            }
+        }
+        filter ipv6-log-rp-packet {
+            term 1 {
+                then {
+                    log;
+                    accept;
+                }
+            }
+        }
+        filter RE_filter-v6 {
+            term deny-v6-login {
+                from {
+                    destination-port [ telnet ssh ];
+                }
+                then {
+                    reject;
+                }
+            }
+            term Other_protocol {
+                then accept;
+            }
+        }
+        filter DNS {
+            term 1 {
+                from {
+                    destination-port 53;
+                }
+                then {
+                    log;
+                    accept;
+                }
+            }
+            term 2 {
+                then accept;
+            }                                                                                                                                                                                                                                                   
+        }
+        filter r0a-in {
+            term 1 {
+                then {
+                    log;
+                    accept;
+                }
+            }
+        }
+        filter ipv6-sample {
+            term netflow {
+                then {
+                    sample;
+                    accept;
+                }
+            }
+        }
+        filter cos-ipv6_edge {
+            term to-noc {
+                from {
+                    destination-address {
+                        2001:da8:bd::/48;
+                    }
+                }
+                then {
+                    loss-priority low;
+                    forwarding-class realtime-traffic;
+                    accept;
+                }
+            }
+            term video-convertor_DLUT {
+                from {
+                    source-address {
+                        2001:da8:20d:25::100/128;
+                        2001:da8:20d:25:7a2b:cbff:fe54:e01b/128;
+                    }
+                    destination-address {
+                        2001:da8:a800::231/128;
+                        2001:da8:a800::232/128;
+                        2001:da8:a800::233/128;
+                        2001:da8:a800::235/128;
+                        2001:da8:a800::236/128;
+                        2001:da8:a800::246/128;
+                        2001:da8:a800::250/128;
+                    }
+                }
+                then {
+                    policer 50m;
+                    loss-priority low;
+                    forwarding-class realtime-traffic;
+                    accept;
+                }
+            }
+            term default {
+                then {
+                    loss-priority high;
+                    accept;                                                                                                                                                                                                                                     
+                }
+            }
+        }
+        filter sava-ctc2bw {
+            term CTC2BW {
+                from {
+                    source-address {
+                        2001:c68::/32;
+                    }
+                    destination-address {
+                        2001:da8:bf::/48;
+                    }
+                }
+                then {
+                    sample;
+                    routing-instance sava-ctc2bw;
+                }
+            }
+            term default {
+                then {
+                    sample;
+                    accept;
+                }
+            }
+        }
+        filter sava-bw2ctc {
+            term BW2CTC {
+                from {
+                    source-address {
+                        2001:da8:bf::/48;
+                    }
+                    destination-address {
+                        2001:c68::/32;
+                    }
+                }
+                then {
+                    routing-instance sava-bw2ctc;
+                }
+            }
+            term default {
+                then accept;
+            }
+        }
+        filter log1003 {
+            term log {
+                from {
+                    address {
+                        2001:c68:300:700::2/128;
+                    }
+                }
+                then {
+                    count log1003;
+                    log;
+                    accept;
+                }
+            }
+            term others {                                                                                                                                                                                                                                       
+                then accept;
+            }
+        }
+        filter ivi-qos {
+            term qos1 {
+                from {
+                    source-address {
+                        2001:DA8:FF3A:C8FB:200::/128;
+                    }
+                }
+                then policer ivi-qos;
+            }
+            term to-qos1 {
+                from {
+                    destination-address {
+                        2001:DA8:FF3A:C8FB:200::/128;
+                    }
+                }
+                then policer ivi-qos;
+            }
+            term default {
+                then accept;
+            }
+        }
+        filter cos-ipv6_noc {
+            term from-noc {
+                from {
+                    source-address {
+                        2001:da8:bd::/48;
+                    }
+                }
+                then {
+                    loss-priority low;
+                    forwarding-class realtime-traffic;
+                    accept;
+                }
+            }
+            term default {
+                then accept;
+            }
+        }
+        filter noc {
+            term test {
+                from {
+                    destination-address {
+                        2001:250:4001:3002::19/128;
+                    }
+                }
+                then {
+                    log;
+                    accept;
+                }
+            }
+            term default {
+                then accept;
+            }
+        }                                                                                                                                                                                                                                                       
+    }
+    family ccc {
+        filter bj-gz-l2vpn {
+            term default {
+                then policer bj-gz-l2vpn;
+            }
+        }
+    }
+    policer multicast-policer {
+        if-exceeding {
+            bandwidth-limit 100k;
+            burst-size-limit 25k;
+        }
+        then discard;
+    }
+    policer bj-gz-l2vpn {
+        if-exceeding {
+            bandwidth-limit 5g;
+            burst-size-limit 15k;
+        }
+        then discard;
+    }
+    policer ivi-qos {
+        if-exceeding {
+            bandwidth-limit 15m;
+            burst-size-limit 1500;
+        }
+        then discard;
+    }
+    policer 50m {
+        if-exceeding {
+            bandwidth-limit 50m;
+            burst-size-limit 15k;
+        }
+        then discard;
+    }
+    filter sflow {
+        term sample {
+            then {
+                sample;
+                accept;
+            }
+        }
+    }
+    filter NMS-LAN {
+        term APAN-to-247-bgp {
+            from {
+                source-address {
+                    203.181.248.35/32;
+                }
+                destination-address {
+                    202.38.120.247/32;
+                }
+            }
+            then accept;
+        }
+        term LX {                                                                                                                                                                                                                                               
+            from {
+                destination-address {
+                    202.38.120.246/32;
+                }
+            }
+            then accept;
+        }
+        term Planet-Lab {
+            from {
+                destination-address {
+                    219.243.201.17/32;
+                }
+            }
+            then accept;
+        }
+        term WWW {
+            from {
+                protocol tcp;
+                destination-port [ 80 8080 ];
+            }
+            then accept;
+        }
+        term SNMP {
+            from {
+                protocol udp;
+                port [ snmp snmptrap ];
+            }
+            then accept;
+        }
+        term ICMP {
+            from {
+                protocol icmp;
+            }
+            then accept;
+        }
+        term NOC {
+            from {
+                destination-address {
+                    202.38.120.244/32;
+                }
+                port [ ssh telnet ];
+            }
+            then accept;
+        }
+        term Trusted_net {
+            from {
+                source-address {
+                    59.66.0.0/16;
+                    166.111.0.0/16;
+                    202.112.0.0/24;
+                    202.112.3.0/24;
+                    202.112.35.0/24;
+                    202.38.120.0/24;
+                    219.243.201.0/24;
+                    219.243.206.0/24;
+                    219.243.208.0/21;
+                    210.25.130.0/24;                                                                                                                                                                                                                            
+                    211.68.127.0/24;
+                    58.196.0.0/24;
+                    202.38.97.0/24;
+                }
+            }
+            then accept;
+        }
+        term DNS {
+            from {
+                protocol [ udp tcp ];
+                port 53;
+            }
+            then accept;
+        }
+        term NTP {
+            from {
+                protocol udp;
+                port ntp;
+            }
+            then accept;
+        }
+        term Others {
+            then {
+                reject;
+            }
+        }
+    }
+    inactive: filter CERNET-in {
+        term mon {
+            from {
+                inactive: source-address {
+                    219.243.215.93/32;
+                }
+                destination-address {
+                    211.68.121.23/32;
+                }
+            }
+            then {
+                log;
+                accept;
+            }
+        }
+        term Others {
+            then accept;
+        }
+    }
+    filter CERNET-out {
+        term Teredo {
+            from {
+                destination-address {
+                    207.46.48.150/32;
+                }
+            }
+            then {
+                log;
+                discard;
+            }                                                                                                                                                                                                                                                   
+        }
+        term 6to4 {
+            from {
+                destination-address {
+                    192.88.99.1/32;
+                }
+            }
+            then {
+                discard;
+            }
+        }
+        term ping-test {
+            from {
+                source-address {
+                    219.243.208.5/32;
+                }
+                destination-address {
+                    211.82.206.36/32;
+                }
+            }
+            then log;
+        }
+        term Others {
+            then accept;
+        }
+    }
+    filter RE_filter-v4 {
+        term CNGI-6IX {
+            from {
+                source-address {
+                    210.25.189.0/24;
+                    210.25.186.0/24;
+                    210.25.187.0/24;
+                }
+                destination-port [ ssh snmp ];
+            }
+            then accept;
+        }
+        term CERNET {
+            from {
+                source-address {
+                    202.112.0.0/24;
+                    202.112.3.0/24;
+                    202.112.49.0/24;
+                }
+                destination-port [ ssh snmp ];
+            }
+            then accept;
+        }
+        term CERNET2 {
+            from {
+                source-address {
+                    202.38.120.0/24;
+                    219.243.208.6/32;
+                }
+                destination-port [ ssh snmp ];
+            }                                                                                                                                                                                                                                                   
+            then accept;
+        }
+        term NOC {
+            from {
+                source-address {
+                    219.243.215.64/26;
+                    202.179.244.0/24;
+                    59.66.66.0/28;
+                    166.111.8.136/32;
+                    166.111.8.133/32;
+                    166.111.111.0/28;
+                }
+                destination-port [ ssh snmp ];
+            }
+            then accept;
+        }
+        term Dragon-Lab {
+            from {
+                source-address {
+                    203.91.120.128/25;
+                }
+                destination-port [ ssh snmp ];
+            }
+            then accept;
+        }
+        term Staff {
+            from {
+                source-address {
+                    166.111.8.133/32;
+                    202.112.6.98/32;
+                }
+                destination-port [ ssh snmp ];
+            }
+            then accept;
+        }
+        term Xing {
+            from {
+                source-address {
+                    202.112.0.56/32;
+                    202.112.0.71/32;
+                    202.38.97.34/32;
+                    202.38.97.66/32;
+                    202.112.3.202/32;
+                    203.91.120.150/32;
+                    202.38.120.246/32;
+                    202.112.35.31/32;
+                    202.112.35.32/32;
+                    202.112.50.74/32;
+                    219.243.209.221/32;
+                }
+                destination-port [ telnet ssh snmp ];
+            }
+            then accept;
+        }
+        term NMS_Yang {
+            from {
+                source-address {                                                                                                                                                                                                                                
+                    219.243.213.128/25;
+                    219.243.214.0/25;
+                    210.25.130.215/32;
+                    210.25.130.219/32;
+                    210.25.130.220/31;
+                    219.243.215.36/32;
+                    166.111.143.192/26;
+                    219.243.208.32/28;
+                }
+                destination-port snmp;
+            }
+            then accept;
+        }
+        term NMS_TEIN2 {
+            from {
+                source-address {
+                    202.179.242.101/32;
+                }
+                destination-port snmp;
+            }
+            then accept;
+        }
+        term Juniper_Support {
+            from {
+                source-address {
+                    116.197.176.5/32;
+                    116.197.180.20/32;
+                }
+                destination-port ssh;
+            }
+            then accept;
+        }
+        term NMS_BUPT {
+            from {
+                source-address {
+                    202.112.10.2/32;
+                    202.112.10.6/32;
+                    202.204.22.196/32;
+                }
+                destination-port snmp;
+            }
+            then accept;
+        }
+        term Other_address {
+            from {
+                destination-port [ ssh snmp telnet ];
+            }
+            then {
+                reject;
+            }
+        }
+        term Other_protocol {
+            then accept;
+        }
+    }
+    filter DUT {
+        term host {                                                                                                                                                                                                                                             
+            from {
+                source-address {
+                    219.243.212.26/32;
+                }
+                destination-address {
+                    219.243.215.5/32;
+                }
+            }
+            then {
+                log;
+                accept;
+            }
+        }
+        term Others {
+            then accept;
+        }
+    }
+    filter DUT-out {
+        term m7i {
+            from {
+                source-address {
+                    219.243.215.5/32;
+                }
+                destination-address {
+                    219.243.212.26/32;
+                }
+            }
+            then {
+                log;
+                accept;
+            }
+        }
+        term Others {
+            then accept;
+        }
+    }
+    filter isa-sg-in {
+        term 1 {
+            from {
+                source-address {
+                    203.91.120.1/32;
+                }
+                destination-address {
+                    155.69.149.167/32;
+                    155.69.149.131/32;
+                }
+            }
+            then {
+                log;
+                accept;
+            }
+        }
+        term others {
+            then accept;
+        }
+    }
+    filter isa-sg-out {                                                                                                                                                                                                                                         
+        term 1 {
+            from {
+                source-address {
+                    155.69.149.167/32;
+                    155.69.149.131/32;
+                }
+                destination-address {
+                    203.91.120.1/32;
+                }
+            }
+            then {
+                log;
+                accept;
+            }
+        }
+        term others {
+            then accept;
+        }
+    }
+    filter deny_www {
+        term 1 {
+            from {
+                source-address {
+                    0.0.0.0/0;
+                }
+                destination-address {
+                    202.38.120.248/32;
+                }
+            }
+            then {
+                discard;
+            }
+        }
+        term others {
+            then accept;
+        }
+    }
+    filter hdxy {
+        term ping {
+            from {
+                source-address {
+                    211.82.206.36/32;
+                    219.243.213.4/32;
+                }
+                destination-address {
+                    219.243.208.5/32;
+                    211.82.206.36/32;
+                }
+            }
+            then log;
+        }
+        term others {
+            then accept;
+        }
+    }
+}
+routing-instances {                                                                                                                                                                                                                                             
+    sava-bw2ctc {
+        instance-type forwarding;
+        routing-options {
+            rib sava-bw2ctc.inet6.0 {
+                static {
+                    route 2001:c68::/32 next-hop 2001:da8:1:1004::2;
+                }
+            }
+        }
+    }
+    sava-ctc2bw {
+        instance-type forwarding;
+        routing-options {
+            rib sava-ctc2bw.inet6.0 {
+                static {
+                    route 2001:da8:bf::/48 next-hop 2001:da8:1:1003::2;
+                }
+            }
+        }
+    }
+}
+services {
+    flow-monitoring {
+        version9 {
+            template ipv6 {
+                ipv6-template;
+            }
+        }
+    }
+}
