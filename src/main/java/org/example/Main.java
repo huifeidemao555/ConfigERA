@@ -33,7 +33,7 @@ public class Main {
     private static String file_name = "PeerSlough_1.cfg";
     private static final String out_suffix = "_out.out";
     private static List<node_feature> input = new ArrayList<>();
-    private static Integer topN = 2;
+    private static Integer topN = 3;
     private static Integer ARC_capacity = 1;
     private static List<node_feature> low_freq_input = null;
     private static List<node_feature> high_freq_input = null;
@@ -42,14 +42,14 @@ public class Main {
     public static void main(String[] args) throws IOException, CloneNotSupportedException {
         get_input();
         split_input(input);
-        input = low_freq_input;
+        input = high_freq_input;
 //        System.out.println("低频的数据集：");
 //        System.out.println(low_freq_input);
 //        System.out.println("高频的数据集：");
 //        System.out.println(high_freq_input);
-//        ConfigERA();
+        ConfigERA();
 //        traditional_statistic();
-        spss();
+//        spss();
 //        ConfigERA_ARC();
 //        GAT();
         //1.解析配置
@@ -128,6 +128,7 @@ public class Main {
                 }
                 //2.解析特征
                 parse_node.parse(parse_config.getTriplets(), parse_config.get_key_words_set());
+                System.out.println("当前数据集的配置对个数" + parse_config.getTriplets().size());
 
                 //3.使用python方法计算矩阵
                 double[][] result = PythonInterpret.pyScript(CastToPyArray.cast(parse_config.matrix.getDegreeMatrix()), CastToPyArray.cast(parse_config.matrix.getAdjMatrix()));
@@ -529,73 +530,78 @@ public class Main {
     public static void spss() throws IOException {
         File dirs = new File("./数据集思科（Netcomplete综合）/");
         File[] sub_dirs = dirs.listFiles();
-        int count = 0;
-        for(File dir : sub_dirs) {
-            if(!dir.isDirectory()) {
-                continue;
-            }
-            if(count == 4) {
-                break;
-            }
-            System.out.println("当前目录为" + dir.getName());
+        for(int p = 1; p <= 5; p++) {
+            System.out.println("当前的topN为" + p);
+            int count = 0;
+            for(File dir : sub_dirs) {
+                if(!dir.isDirectory()) {
+                    continue;
+                }
+                if(count == 4) {
+                    break;
+                }
+                count++;
+                System.out.println("当前目录为" + dir.getName());
 
-            long start_time = System.currentTimeMillis();
-            Map<Triplet, Double> map = calculate_scores.calculates_scores_spss(dir.getPath() + "/");
-            long end_time = System.currentTimeMillis();
-            System.out.println("程序训练时间为" + (end_time - start_time) + "ms");
+                long start_time = System.currentTimeMillis();
+                Map<Triplet, Double> map = calculate_scores.calculates_scores_spss(dir.getPath() + "/");
+                long end_time = System.currentTimeMillis();
+                System.out.println("程序训练时间为" + (end_time - start_time) + "ms");
 //        List<String> ret = get_ret_spss(map, "ip", 3);
 //        System.out.println(ret);
-            long rec_time_count = 0;
-            double[] list = new double[4];
-            DecimalFormat decimalFormat = new DecimalFormat("#.##");
-            for(int k = 0; k < 4; k++) {
-                list[k] = 0.00;
-            }
-            for(int j = 0; j < 3; j++) {
-                int correct_count = 0;
-                double rec_time = 0.00;
-                for(int i = 0; i < 2000; i++) {
-                    Random random = new Random();
-                    long rec_start_time = System.nanoTime();
-                    node_feature feature = input.get(random.nextInt(input.size()));
-                    if(feature.getChild_node().isEmpty()) {
-                        i--;
-                        continue;
-                    }
-                    //System.out.println("******************************************************");
-                    //System.out.println("期望得到的结果是" + feature.getChild_node());
-                    //System.out.println("推荐的结果如下:");
-                    List<String> rec = get_ret_spss(map, feature.getNode_name(), topN);
-                    //System.out.println(rec);
-                    long rec_end_time = System.nanoTime();
-                    rec_time += (rec_end_time - rec_start_time);
-                    if(rec.contains(feature.getChild_node().get(0))) {
-                        correct_count += 1;
-                    }
-                    if(i > 0 && (i % 500 == 0 || i == 2000 - 1)) {
-                        if(i % 500 == 0) {
-                            list[i / 500 - 1] += (correct_count * 100.00 / 2000);
-                        } else {
-                            list[3] += (correct_count * 100.00 / 2000);
+                long rec_time_count = 0;
+                double[] list = new double[4];
+                DecimalFormat decimalFormat = new DecimalFormat("#.##");
+                for(int k = 0; k < 4; k++) {
+                    list[k] = 0.00;
+                }
+                for(int j = 0; j < 3; j++) {
+                    int correct_count = 0;
+                    double rec_time = 0.00;
+                    for(int i = 0; i < 2000; i++) {
+                        Random random = new Random();
+                        long rec_start_time = System.nanoTime();
+                        node_feature feature = input.get(random.nextInt(input.size()));
+                        if(feature.getChild_node().isEmpty()) {
+                            i--;
+                            continue;
+                        }
+                        //System.out.println("******************************************************");
+                        //System.out.println("期望得到的结果是" + feature.getChild_node());
+                        //System.out.println("推荐的结果如下:");
+                        List<String> rec = get_ret_spss(map, feature.getNode_name(), topN);
+                        //System.out.println(rec);
+                        long rec_end_time = System.nanoTime();
+                        rec_time += (rec_end_time - rec_start_time);
+                        if(rec.contains(feature.getChild_node().get(0))) {
+                            correct_count += 1;
+                        }
+                        if(i > 0 && (i % 500 == 0 || i == 2000 - 1)) {
+                            if(i % 500 == 0) {
+                                list[i / 500 - 1] += (correct_count * 100.00 / 2000);
+                            } else {
+                                list[3] += (correct_count * 100.00 / 2000);
+                            }
                         }
                     }
-                }
-                rec_time_count += (long) (rec_time / 2000);
+                    rec_time_count += (long) (rec_time / 2000);
 //                    System.out.println("程序推荐的平均时间为" + rec_time / 2000 + "ns");
 //                    System.out.println(Arrays.toString(list));
 //                    System.out.println("准确率为" + (correct_count * 100.00 / 2000) + "%");
-            }
+                }
 
 //                long rec_end_time = System.currentTimeMillis();
 //                System.out.println("程序推荐的时间为" + (rec_end_time - rec_start_time) + "毫秒");
-            List<String> ret = new ArrayList<>();
-            for(int k = 0; k < 4; k++) {
-                list[k] /= 3;
-                ret.add(decimalFormat.format(list[k]));
+                List<String> ret = new ArrayList<>();
+                for(int k = 0; k < 4; k++) {
+                    list[k] /= 3;
+                    ret.add(decimalFormat.format(list[k]));
+                }
+                System.out.println("准确率变化为" + ret);
+                System.out.println("程序推荐的平均时间为" + rec_time_count / 3 + "ns");
             }
-            System.out.println("准确率变化为" + ret);
-            System.out.println("程序推荐的平均时间为" + rec_time_count / 3 + "ns");
         }
+
 
     }
 }

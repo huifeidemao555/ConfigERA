@@ -179,9 +179,10 @@ public class calculate_scores {
         return x_2;
     }
 
-    public static Map<Triplet, Double> calculates_scores_spss_junniper() throws IOException {
-        String path_a = "./数据集junniper/卡方取输入/A/";
-        String path_b = "./数据集junniper/卡方取输入/B/";
+    public static Map<Triplet, Double> calculates_scores_spss_junniper(String path) throws IOException {
+        String path_a = "./数据集junniper/固定取输入/";
+//        String path_b = "./数据集junniper/卡方取输入/B/";
+        String path_b = path;
         List<String> file_names_a = listFiles(path_a);
         List<String> file_names_b = listFiles(path_b);
         String saved_path = "";

@@ -1,15 +1,14 @@
-kfp@r-hzh6_re0> show configuration | no-more 
-## Last commit: 2013-05-10 23:32:39 CST by zhzhy
-version 10.0S6;
+kfp@r-chc6_re0> show configuration | no-more 
+## Last commit: 2013-01-11 14:45:03 CST by zhzhy
 groups {
     re0 {
         system {
-            host-name r-hzh6_re0;
+            host-name r-chc6_re0;
         }
     }
     re1 {
         system {
-            host-name r-hzh6_re1;
+            host-name r-chc6_re1;
         }
     }
     INTERFACE-BACKBONE {
@@ -45,7 +44,7 @@ system {
     domain-name cernet2.net;
     time-zone Asia/Shanghai;
     root-authentication {
-        encrypted-password "$1$dsN07vfR$c.1GrVqjd45Fs5o6jLmNf."; ## SECRET-DATA
+        encrypted-password "$1$Wrm3ubYh$oQ5MFo94xQVBN752asMHr."; ## SECRET-DATA
     }
     name-server {
         202.38.184.13;
@@ -71,21 +70,28 @@ system {
             uid 2000;
             class super-user;
             authentication {
-                encrypted-password "$1$4JOkNMNL$Q.XNAP3wDgksyz8kx5e1D."; ## SECRET-DATA
+                encrypted-password "$1$wjvIgRXx$h2EaS9ctEx8iKhbwFY/bk/"; ## SECRET-DATA
             }
         }
         user cernet {
-            uid 2005;
+            uid 2004;
             class super-user;
             authentication {
-                encrypted-password "$1$aiZ.nVo0$Eyz185xWQ.Rs5DkJ1BU1K/"; ## SECRET-DATA
+                encrypted-password "$1$poEbLpv7$mkD1G7Xxl5E3lO6FKvF2w1"; ## SECRET-DATA
             }
         }
         user cernet2 {
             uid 2001;
             class normal;
             authentication {
-                encrypted-password "$1$cDZmcPpv$OSWNxsF/DAs6cyoZqo.Dm0"; ## SECRET-DATA
+                encrypted-password "$1$elYiL1bP$4L402GS2RWvi.fZ0zpv.l/"; ## SECRET-DATA
+            }
+        }
+        user chccore202 {
+            uid 2011;
+            class super-user;
+            authentication {
+                encrypted-password "$1$CS2qduYL$HcSlftWB8FKHmdC630f.w1"; ## SECRET-DATA
             }
         }
         user gaowenjun {
@@ -95,18 +101,11 @@ system {
                 encrypted-password "$1$6PUL1Cy/$bDXk9WTHjYQ459EAhePg9/"; ## SECRET-DATA
             }
         }
-        user hzhcore212 {
-            uid 2011;
-            class super-user;
-            authentication {
-                encrypted-password "$1$yP05GvO9$Mn3i.z14TNAwTNlBBPWSM/"; ## SECRET-DATA
-            }
-        }
         inactive: user juniper {
-            uid 2002;
+            uid 2005;
             class super-user;
             authentication {
-                encrypted-password "$1$zfAOVMrT$48/eGxnBQ98EbS.sbeJqB/"; ## SECRET-DATA
+                encrypted-password "$1$VptRuSPy$MveNbSyhwWCtPCejE3zsm."; ## SECRET-DATA
             }
         }
         user kfp {
@@ -124,7 +123,7 @@ system {
             }
         }
         user zhzhy {
-            uid 2003;
+            uid 2002;
             class super-user;
             authentication {
                 encrypted-password "$1$MXCkBxqC$wrenUKcQVOo/tzDp6R.w20"; ## SECRET-DATA
@@ -132,9 +131,7 @@ system {
         }
     }
     services {
-        ssh {
-            root-login deny;
-        }
+        ssh;
     }
     syslog {
         user * {
@@ -151,18 +148,17 @@ system {
             authorization info;
         }
         time-format year;
-        source-address 202.38.120.212;
+        source-address 202.38.120.202;
     }
     commit synchronize;
     ntp {
+        server 202.112.10.60;
         server 202.112.0.38;
         server 202.112.0.7;
-        server 202.112.10.60;
     }
 }
 chassis {
     redundancy {
-        routing-engine 0 master;
         graceful-switchover;
     }
     alarm {
@@ -174,43 +170,27 @@ chassis {
 interfaces {
     so-0/0/0 {
         apply-groups INTERFACE-BACKBONE;
-        description 2.5G_to_ShangHai-Core_J;
-        clocking external;
+        description 2.5G_to_HaErBin-Core_J;
+        clocking internal;
+        encapsulation ppp;
         sonet-options {
             fcs 32;
             payload-scrambler;
         }
         unit 0 {
             family inet {
-                address 202.38.120.66/30;
+                address 202.38.120.101/30;
             }
             family inet6 {
-                address 2001:da8:1:11::2/64;
-            }
-            family mpls;
-        }
-    }
-    so-0/0/1 {
-        apply-groups INTERFACE-BACKBONE;
-        description 2.5G_to_XiaMen-Core_J;
-        clocking external;
-        sonet-options {
-            fcs 32;
-            payload-scrambler;
-        }
-        unit 0 {
-            family inet {
-                address 202.38.120.61/30;
-            }
-            family inet6 {
-                address 2001:da8:1:10::1/64;
+                address 2001:da8:1:1a::1/64;
             }
             family mpls;
         }
     }
     so-0/0/2 {
-        description 2.5G_to_HangZhou-Edge_B_2;
+        description 2.5G_to_ChangChun-Edge_B;
         clocking internal;
+        encapsulation ppp;
         sonet-options {
             fcs 32;
             payload-scrambler;
@@ -220,78 +200,57 @@ interfaces {
                 filter {
                     input snmp-in;
                 }
-                address 10.2.21.1/30;
+                address 10.2.11.1/30;
             }
             family inet6 {
-                address 2001:da8:1:215::1/64;
+                address 2001:da8:1:10b::1/64;
             }
         }
     }
     so-0/0/3 {
-        description 2.5G_to_HangZhou-Edge_B;
-        clocking internal;
+        apply-groups INTERFACE-BACKBONE;
+        description 2.5G_to_ShenYang-Core_J;
+        clocking external;
+        encapsulation ppp;
         sonet-options {
             fcs 32;
             payload-scrambler;
         }
         unit 0 {
             family inet {
-                filter {
-                    input snmp-in;
-                }
-                address 10.1.21.1/30;
+                address 202.38.120.98/30;
             }
             family inet6 {
-                address 2001:da8:1:115::1/64;
+                address 2001:da8:1:19::2/64;
             }
+            family mpls;
         }
     }
     ge-0/1/0 {
-        description 1G_to_Planet-Lab-sw;
-        unit 0 {
-            family inet {
-                address 219.243.201.98/30 {
-                    primary;
-                }
-                address 219.243.206.174/29;
-            }
-            family inet6 {
-                address 2001:250:ffCA:266C:A100::/70;
-                address 2001:da8:E7FF:ffFF::1/64;
-            }
-        }
-    }
-    ge-0/1/1 {
         description 1G_to_2960sw;
         vlan-tagging;
         unit 10 {
             description "For NMS-Group SunFire Server";
             vlan-id 10;
             family inet {
-                address 219.243.214.33/29;
+                address 219.243.213.209/29;
             }
             family inet6 {
-                address 2001:da8:ff:215::1/64;
-            }
-        }
-        unit 20 {
-            description "For Multicast-Routing IBM Server";
-            vlan-id 20;
-            family inet6 {
-                address 2001:da8:ff:115::1/64;
+                address 2001:da8:ff:20b::1/64;
             }
         }
         unit 30 {
             description "For Multicast L1-Gateway Server";
             vlan-id 30;
             family inet6 {
-                address 2001:da8:feed:21::1/64;
+                address 2001:da8:feed:22::1/64;
             }
         }
     }
     so-0/2/0 {
-        description 2.5G_to_HangZhou-Edge_B_3;
+        description 2.5G_to_ChangChun-Edge_B_2;
         clocking internal;
+        encapsulation ppp;
         sonet-options {
             fcs 32;
             payload-scrambler;
@@ -301,16 +260,17 @@ interfaces {
                 filter {
                     input snmp-in;
                 }
-                address 10.3.21.1/30;
+                address 10.1.11.1/30;
             }
             family inet6 {
-                address 2001:da8:1:315::1/64;
+                address 2001:da8:1:20b::1/64;
             }
         }
     }
     so-0/2/1 {
-        description 2.5G_to_HangZhou-Edge_B_4;
+        description 2.5G_to_ChangChun-Edge_B_3;
         clocking internal;
+        encapsulation ppp;
         sonet-options {
             fcs 32;
             payload-scrambler;
@@ -320,58 +280,66 @@ interfaces {
                 filter {
                     input snmp-in;
                 }
-                address 10.4.21.1/30;
+                address 10.3.11.1/30;
             }
             family inet6 {
-                address 2001:da8:1:415::1/64;
+                address 2001:da8:1:30b::1/64;
+            }
+        }
+    }
+    so-0/2/2 {
+        description 2.5G_to_ChangChun-Edge_B_4;
+        clocking internal;
+        encapsulation ppp;
+        sonet-options {
+            fcs 32;
+            payload-scrambler;
+        }
+        unit 0 {
+            family inet {
+                filter {
+                    input snmp-in;
+                }
+                address 10.4.11.1/30;
+            }
+            family inet6 {
+                address 2001:da8:1:40b::1/64;
             }
         }
     }
     ge-0/3/0 {
-        description 10G_to_HangZhou-Edge_NE40;
+        description 10G_to_ChangChun-Edge_NE40e;
         mtu 9192;
         unit 0 {
             family inet {
                 filter {
                     input snmp-in;
                 }
-                address 10.5.21.1/30;
+                address 10.5.11.1/30;
             }
             family inet6 {
                 filter {
                     input tag-abnormal;
                 }
-                address 2001:da8:1:515::1/64;
+                address 2001:da8:1:50b::1/64;
             }
         }
     }
     lo0 {
-        description HangZhou-Core_ZheJiangDaXue-Juniper;
         unit 0 {
+            description ChangChun-Core_JiLinDaXue_Juniper;
             family inet {
                 filter {
                     input RE_filter-v4;
                 }
-                address 202.38.120.212/32;
+                address 202.38.120.202/32;
             }
             family inet6 {
                 filter {
                     input RE_filter-v6;
                 }
-                address 2001:da8:1:ff::21/128;
+                address 2001:da8:1:ff::11/128;
             }
-        }
-    }
-}
-forwarding-options {
-    hash-key {
-        inactive: family inet6 {
-            layer-3 {
-                destination-address;
-                incoming-interface-index;
-                source-address;
-            }
-            layer-4;
         }
     }
 }
@@ -410,7 +378,12 @@ snmp {
     }
 }
 routing-options {
-    graceful-restart;
+    nonstop-routing;
+    rib inet6.0 {
+        static {
+            route 2001:da8:aa::1/128 next-hop [ 2001:da8:1:10b::2 2001:da8:1:20b::2 ];
+        }
+    }
     autonomous-system 23910;
     forwarding-table {
         export load-balancing;
@@ -421,10 +394,7 @@ protocols {
         interface all {
             disable;
         }
-        interface ge-0/1/0.0 {
-            version 2;
-        }
-        interface ge-0/1/1.30 {
+        interface ge-0/1/0.30 {
             version 2;
         }
     }
@@ -432,7 +402,7 @@ protocols {
         group ibgpv4-core {
             type internal;
             description to_cernet2_all_v4cores;
-            local-address 202.38.120.212;
+            local-address 202.38.120.202;
             family inet {
                 unicast;
             }
@@ -466,9 +436,6 @@ protocols {
             neighbor 202.38.120.201 {
                 description to_cernet2_r-dln6;
             }
-            neighbor 202.38.120.202 {
-                description to_cernet2_r-chc6;
-            }
             neighbor 202.38.120.203 {
                 description to_cernet2_r-hrb6;
             }
@@ -496,6 +463,9 @@ protocols {
             neighbor 202.38.120.211 {
                 description to_cernet2_r-hef6;
             }
+            neighbor 202.38.120.212 {
+                description to_cernet2_r-hzh6;
+            }
             neighbor 202.38.120.213 {
                 description to_cernet2_r-xmn6;
             }
@@ -512,78 +482,78 @@ protocols {
         group ibgpv6-core {
             type internal;
             description to_cernet2_all_v6cores;
-            local-address 2001:da8:1:ff::21;
+            local-address 2001:da8:1:ff::11;
             family inet6 {
                 unicast;
             }
             export nhs;
-            neighbor 2001:da8:1:ff::1 {
+            neighbor 2001:DA8:1:ff::1 {
                 description to_cernet2_r-bj6;
             }
-            neighbor 2001:da8:1:ff::2 {
+            neighbor 2001:DA8:1:ff::2 {
                 description to_cernet2_r-wh6;
             }
-            neighbor 2001:da8:1:ff::3 {
+            neighbor 2001:DA8:1:ff::3 {
                 description to_cernet2_r-gz6;
             }
-            neighbor 2001:da8:1:ff::4 {
+            neighbor 2001:DA8:1:ff::4 {
                 description to_cernet2_r-nj6;
             }
-            neighbor 2001:da8:1:ff::5 {
+            neighbor 2001:DA8:1:ff::5 {
                 description to_cernet2_r-sh6;
             }
-            neighbor 2001:da8:1:ff::6 {
+            neighbor 2001:DA8:1:ff::6 {
                 description to_cernet2_r-zhz6;
             }
-            neighbor 2001:da8:1:ff::7 {
+            neighbor 2001:DA8:1:ff::7 {
                 description to_cernet2_r-tjn6;
             }
-            neighbor 2001:da8:1:ff::8 {
+            neighbor 2001:DA8:1:ff::8 {
                 description to_cernet2_r-jnn6;
             }
-            neighbor 2001:da8:1:ff::9 {
+            neighbor 2001:DA8:1:ff::9 {
                 description to_cernet2_r-sy6;
             }
-            neighbor 2001:da8:1:ff::10 {
+            neighbor 2001:DA8:1:ff::10 {
                 description to_cernet2_r-dln6;
             }
-            neighbor 2001:da8:1:ff::11 {
-                description to_cernet2_r-chc6;
-            }
-            neighbor 2001:da8:1:ff::12 {
+            neighbor 2001:DA8:1:ff::12 {
                 description to_cernet2_r-hrb6;
             }
-            neighbor 2001:da8:1:ff::13 {
+            neighbor 2001:DA8:1:ff::13 {
                 description to_cernet2_r-pku6;
             }
-            neighbor 2001:da8:1:ff::14 {
+            neighbor 2001:DA8:1:ff::14 {
                 description to_cernet2_r-bupt6;
             }
-            neighbor 2001:da8:1:ff::15 {
+            neighbor 2001:DA8:1:ff::15 {
                 description to_cernet2_r-buaa6;
             }
-            neighbor 2001:da8:1:ff::16 {
+            neighbor 2001:DA8:1:ff::16 {
                 description to_cernet2_r-xa6;
             }
-            neighbor 2001:da8:1:ff::17 {
+            neighbor 2001:DA8:1:ff::17 {
                 description to_cernet2_r-cd6;
             }
-            neighbor 2001:da8:1:ff::18 {
+            neighbor 2001:DA8:1:ff::18 {
                 description to_cernet2_r-chq6;
             }
-            neighbor 2001:da8:1:ff::19 {
+            neighbor 2001:DA8:1:ff::19 {
                 description to_cernet2_r-lzh6;
             }
-            neighbor 2001:da8:1:ff::20 {
+            neighbor 2001:DA8:1:ff::20 {
                 description to_cernet2_r-hef6;
             }
-            neighbor 2001:da8:1:ff::22 {
+            neighbor 2001:DA8:1:ff::21 {
+                description to_cernet2_r-hzh6;
+            }
+            neighbor 2001:DA8:1:ff::22 {
                 description to_cernet2_r-xmn6;
             }
-            neighbor 2001:da8:1:ff::23 {
+            neighbor 2001:DA8:1:ff::23 {
                 description to_cernet2_r-chs6;
             }
-            neighbor 2001:da8:1:ff::24 {
+            neighbor 2001:DA8:1:ff::24 {
                 description to_cernet2_r-fudan6;
             }
             neighbor 2001:da8:1:ff::25 {
@@ -597,27 +567,27 @@ protocols {
                 unicast;
             }
             export ebgp-v6-edge-ex-policy;
-            peer-as 24367;
-            neighbor 2001:da8:1:115::2 {
-                description to_edge_be12k;
-            }
-            neighbor 2001:da8:1:515::2 {
+            peer-as 24371;
+            neighbor 2001:da8:1:50b::2 {
                 description to_edge_ne40e;
+            }
+            neighbor 2001:da8:1:10b::2 {
+                description to_edge-BE12K;
             }
         }
         group ibgp-v4-7206 {
             type internal;
-            local-address 202.38.120.212;
+            local-address 202.38.120.202;
             family inet {
                 unicast;
             }
             neighbor 202.38.120.217 {
-                description to_Cisco-7206;
+                description to_Cisco_7206;
             }
         }
         group ibgp-v6-7206 {
             type internal;
-            local-address 2001:da8:1:ff::21;
+            local-address 2001:da8:1:ff::11;
             family inet6 {
                 unicast;
             }
@@ -627,7 +597,7 @@ protocols {
         }
         group ebgp-v6-immc {
             type external;
-            local-address 2001:da8:1:ff::21;
+            local-address 2001:da8:1:ff::11;
             import import-deny-all;
             family inet6 {
                 unicast;
@@ -645,24 +615,16 @@ protocols {
         export direct-routes;
         reference-bandwidth 10g;
         area 0.0.0.0 {
+            interface so-0/0/3.0;
             interface so-0/0/0.0;
-            interface so-0/0/1.0;
-            interface so-0/2/2.0;
         }
     }
     ospf3 {
         export direct-routes;
         reference-bandwidth 10g;
         area 0.0.0.0 {
+            interface so-0/0/3.0;
             interface so-0/0/0.0;
-            interface so-0/0/1.0;
-            interface so-0/2/2.0;
-        }
-    }
-    ldp {
-        interface all;
-        interface fxp0.0 {
-            disable;
         }
     }
     pim {
@@ -679,10 +641,13 @@ protocols {
             mode sparse;
             version 2;
         }
-        interface lo0.0 {
+        interface fxp0.0 {
             disable;
         }
-        interface fxp0.0 {
+        interface fxp1.0 {
+            disable;
+        }
+        interface lo0.0 {
             disable;
         }
     }
@@ -760,19 +725,6 @@ policy-options {
         term SSM_Bao {
             from {
                 route-filter 2001:da8:feee::/48 prefix-length-range /64-/64;
-            }
-            then accept;
-        }
-        term 3TNet-HangZhou {
-            from {
-                route-filter 2001:256:100::/48 exact;
-                source-address-filter 2001:256:100::/48 exact;
-            }
-            then accept;
-        }
-        term Alibaba {
-            from {
-                route-filter 2401:2e00::/32 exact;
             }
             then accept;
         }
@@ -1033,23 +985,6 @@ firewall {
                     accept;
                 }
             }
-            term nj-cern {
-                from {
-                    source-address {
-                        2001:da8:1002:199::/64;
-                        2001:1458:e008:3::13/128;
-                    }
-                    destination-address {
-                        2001:1458:e008:3::13/128;
-                        2001:da8:1002:199::/64;
-                    }
-                }
-                then {
-                    loss-priority low;
-                    forwarding-class realtime-traffic;
-                    accept;
-                }
-            }
             term default {
                 then {
                     loss-priority high;
@@ -1173,15 +1108,6 @@ firewall {
                     210.25.130.220/31;
                     219.243.215.36/32;
                     219.243.208.32/28;
-                }
-                destination-port snmp;
-            }
-            then accept;
-        }
-        term NMS_ZheDa {
-            from {
-                source-address {
-                    210.32.156.138/32;
                 }
                 destination-port snmp;
             }
